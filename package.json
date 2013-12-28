@@ -1,0 +1,29 @@
+{
+  "name": "linearscan.js",
+  "version": "0.0.0",
+  "description": "Linearscan register allocator",
+  "main": "lib/linearscan.js",
+  "scripts": {
+    "test": "mocha --reporter spec test/*-test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/indutny/linearscan.js"
+  },
+  "keywords": [
+    "linearscan",
+    "register",
+    "allocator"
+  ],
+  "author": "Fedor Indutny <fedor.indutny@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/indutny/linearscan.js/issues"
+  },
+  "homepage": "https://github.com/indutny/linearscan.js",
+  "devDependencies": {
+    "mocha": "~1.16.2"
+  },
+  "dependencies": {
+  }
+}
