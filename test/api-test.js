@@ -9,7 +9,7 @@ describe('Linearscan.js', function() {
 
     var output = l.run(input);
 
-    console.log(require('util').inspect(output, false, 300));
+    // console.log(require('util').inspect(output, false, 300));
     // assert.deepEqual(output, expected);
   }
 
@@ -17,25 +17,25 @@ describe('Linearscan.js', function() {
     registers: [ 'rax', 'rbx', 'rcx', 'rdx' ],
 
     instructions: {
-      literal: { args: [ { type: 'js' } ] },
+      literal: { input: [ { type: 'js' } ] },
       add: {
-        ret: { type: 'register' },
-        args: [ { type: 'register' }, { type: 'register' } ]
+        output: { type: 'register' },
+        input: [ { type: 'register' }, { type: 'register' } ]
       },
       branch: {
-        ret: null,
-        args: [ { type: 'register' }, { type: 'register' } ]
+        output: null,
+        input: [ { type: 'register' }, { type: 'register' } ]
       },
-      ret: { ret: null, args: [ { type: 'register', id: 'rax' } ] }
+      ret: { output: null, input: [ { type: 'register', id: 'rax' } ] }
     }
   }, [{
     id: 'B1',
     instructions: [
-      { id: 'i1', type: 'literal', args: [ { type: 'js', value: 0 } ] },
-      { id: 'i2', type: 'literal', args: [ { type: 'js', value: 42 } ] },
+      { id: 'i1', type: 'literal', input: [ { type: 'js', value: 0 } ] },
+      { id: 'i2', type: 'literal', input: [ { type: 'js', value: 42 } ] },
       {
         type: 'to_phi',
-        args: [
+        input: [
           { type: 'instruction', id: 'i1' },
           { type: 'instruction', id: 'i3' }
         ]
@@ -49,7 +49,7 @@ describe('Linearscan.js', function() {
       {
         type: 'branch',
         cond: 'less',
-        args: [
+        input: [
           { type: 'instruction', id: 'i3' },
           { type: 'instruction', id: 'i2' }
         ]
@@ -59,23 +59,23 @@ describe('Linearscan.js', function() {
   }, {
     id: 'B4',
     instructions: [
-      { type: 'ret', args: [ { type: 'instruction', id: 'i3' } ] }
+      { type: 'ret', input: [ { type: 'instruction', id: 'i3' } ] }
     ]
   }, {
     id: 'B3',
     instructions: [
-      { id: 'i4', type: 'literal', args: [ { type: 'js', value: 1 } ] },
+      { id: 'i4', type: 'literal', input: [ { type: 'js', value: 1 } ] },
       {
         id: 'i5',
         type: 'add',
-        args: [
+        input: [
           { type: 'instruction', id: 'i3' },
           { type: 'instruction', id: 'i4' }
         ]
       },
       {
         type: 'to_phi',
-        args: [
+        input: [
           { type: 'instruction', id: 'i5' },
           { type: 'instruction', id: 'i3' }
         ]
