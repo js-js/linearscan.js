@@ -9,6 +9,7 @@ describe('Linearscan.js', function() {
 
     var output = l.run(input);
 
+    console.log(JSON.stringify(l.toJSON()));
     // console.log(require('util').inspect(output, false, 300));
     // assert.deepEqual(output, expected);
   }
@@ -17,27 +18,26 @@ describe('Linearscan.js', function() {
     registers: [ 'rax', 'rbx', 'rcx', 'rdx' ],
 
     instructions: {
-      literal: { input: [ { type: 'js' } ] },
+      literal: { inputs: [ { type: 'js' } ] },
       add: {
         output: { type: 'register' },
-        input: [ { type: 'register' }, { type: 'register' } ]
+        inputs: [ { type: 'register' }, { type: 'register' } ]
       },
       branch: {
         output: null,
-        input: [ { type: 'register' }, { type: 'register' } ]
+        inputs: [ { type: 'register' }, { type: 'register' } ]
       },
-      ret: { output: null, input: [ { type: 'register', id: 'rax' } ] }
+      ret: { output: null, inputs: [ { type: 'register', id: 'rax' } ] }
     }
   }, [{
     id: 'B1',
     instructions: [
-      { id: 'i1', type: 'literal', input: [ { type: 'js', value: 0 } ] },
-      { id: 'i2', type: 'literal', input: [ { type: 'js', value: 42 } ] },
+      { id: 'zero', type: 'literal', inputs: [ { type: 'js', value: 0 } ] },
       {
         type: 'to_phi',
-        input: [
-          { type: 'instruction', id: 'i1' },
-          { type: 'instruction', id: 'i3' }
+        inputs: [
+          { type: 'instruction', id: 'zero' },
+          { type: 'instruction', id: 'index' }
         ]
       }
     ],
@@ -45,39 +45,40 @@ describe('Linearscan.js', function() {
   }, {
     id: 'B2',
     instructions: [
-      { id: 'i3', type: 'phi' },
+      { id: 'index', type: 'phi' },
+      { id: 'max', type: 'literal', inputs: [ { type: 'js', value: 42 } ] },
       {
         type: 'branch',
         cond: 'less',
-        input: [
-          { type: 'instruction', id: 'i3' },
-          { type: 'instruction', id: 'i2' }
+        inputs: [
+          { type: 'instruction', id: 'index' },
+          { type: 'instruction', id: 'max' }
         ]
       }
     ],
-    successors: [ 'B4', 'B3' ]
+    successors: [ 'B3', 'B4' ]
   }, {
     id: 'B4',
     instructions: [
-      { type: 'ret', input: [ { type: 'instruction', id: 'i3' } ] }
+      { type: 'ret', inputs: [ { type: 'instruction', id: 'index' } ] }
     ]
   }, {
     id: 'B3',
     instructions: [
-      { id: 'i4', type: 'literal', input: [ { type: 'js', value: 1 } ] },
+      { id: 'one', type: 'literal', inputs: [ { type: 'js', value: 1 } ] },
       {
-        id: 'i5',
+        id: 'sum',
         type: 'add',
-        input: [
-          { type: 'instruction', id: 'i3' },
-          { type: 'instruction', id: 'i4' }
+        inputs: [
+          { type: 'instruction', id: 'index' },
+          { type: 'instruction', id: 'one' }
         ]
       },
       {
         type: 'to_phi',
-        input: [
-          { type: 'instruction', id: 'i5' },
-          { type: 'instruction', id: 'i3' }
+        inputs: [
+          { type: 'instruction', id: 'sum' },
+          { type: 'instruction', id: 'index' }
         ]
       }
     ],
