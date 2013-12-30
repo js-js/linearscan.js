@@ -17,28 +17,35 @@ describe('Linearscan.js', function() {
     registers: [ 'rax', 'rbx', 'rcx', 'rdx' ],
 
     instructions: {
-      literal: { args: [ 'js' ] },
-      add: { ret: 'reg', args: [ 'reg', 'reg' ] },
-      ret: { ret: null, args: [ 'rax' ] }
+      literal: { args: [ { type: 'js' } ] },
+      add: {
+        ret: { type: 'register' },
+        args: [ { type: 'register' }, { type: 'register' } ]
+      },
+      branch: {
+        ret: null,
+        args: [ { type: 'register' }, { type: 'register' } ]
+      },
+      ret: { ret: null, args: [ { type: 'register', id: 'rax' } ] }
     }
   }, [{
     id: 'B1',
     instructions: [
       { id: 'i1', type: 'literal', args: [ { type: 'js', value: 0 } ] },
-      { id: 'i2', type: 'literal', args: [ { type: 'js', value: 42 } ] }
+      { id: 'i2', type: 'literal', args: [ { type: 'js', value: 42 } ] },
+      {
+        type: 'to_phi',
+        args: [
+          { type: 'instruction', id: 'i1' },
+          { type: 'instruction', id: 'i3' }
+        ]
+      }
     ],
     successors: [ 'B2' ]
   }, {
     id: 'B2',
     instructions: [
-      {
-        id: 'i3',
-        type: 'phi',
-        args: [
-          { type: 'instruction', id: 'i1' },
-          { type: 'instruction', id: 'i5' }
-        ]
-    },
+      { id: 'i3', type: 'phi' },
       {
         type: 'branch',
         cond: 'less',
@@ -64,6 +71,13 @@ describe('Linearscan.js', function() {
         args: [
           { type: 'instruction', id: 'i3' },
           { type: 'instruction', id: 'i4' }
+        ]
+      },
+      {
+        type: 'to_phi',
+        args: [
+          { type: 'instruction', id: 'i5' },
+          { type: 'instruction', id: 'i3' }
         ]
       }
     ],
