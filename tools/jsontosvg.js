@@ -560,7 +560,7 @@ Converter.prototype.drawInterval = function drawInterval(interval, i) {
       y: y,
       width: this.use.width,
       height: this.interval.height - this.interval.paddingY,
-      'class': 'use-' + use.kind.type
+      'class': 'use-' + use.kind
     });
   }, this);
 };

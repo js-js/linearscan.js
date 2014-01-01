@@ -29,7 +29,7 @@ describe('Linearscan.js', function() {
       },
       print: {
         output: null,
-        inputs: [ { type: 'register' } ],
+        inputs: [ { type: 'register', id: 'rcx' } ],
         call: true
       },
       ret: { output: null, inputs: [ { type: 'register', id: 'rax' } ] }
