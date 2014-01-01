@@ -325,10 +325,18 @@ Converter.prototype.drawInstructions = function drawInstructions() {
           }
         }
       }
+      var value;
+      if (interval.value.type === 'virtual')
+        value = 'v' + interval.value.id;
+      else if (interval.value.type === 'register')
+        value = interval.value.id;
+      else
+        value = 's' + interval.value.index;
+
       var parent = interval.parent !== null ? interval.parent : interval.id;
       return '<tspan ' +
              'class="r-' + parent + '">' +
-             interval.value +
+             value +
              '</tspan>';
     }
 

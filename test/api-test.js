@@ -27,6 +27,11 @@ describe('Linearscan.js', function() {
         output: null,
         inputs: [ { type: 'register' }, { type: 'register' } ]
       },
+      print: {
+        output: null,
+        inputs: [ { type: 'register' } ],
+        call: true
+      },
       ret: { output: null, inputs: [ { type: 'register', id: 'rax' } ] }
     }
   }, [{
@@ -73,6 +78,10 @@ describe('Linearscan.js', function() {
           { type: 'instruction', id: 'index' },
           { type: 'instruction', id: 'one' }
         ]
+      },
+      {
+        type: 'print',
+        inputs: [ { type: 'instruction', id: 'sum' } ]
       },
       {
         type: 'to_phi',
