@@ -317,6 +317,14 @@ Converter.prototype.drawInstructions = function drawInstructions() {
         return use.pos === instr.id;
       });
     }
+    function value_to_str(value) {
+      if (value.type === 'virtual')
+        return 'v' + value.id;
+      else if (value.type === 'register')
+        return value.id;
+      else
+        return 's' + value.id;
+    }
     function interval_to_str(id) {
       var interval = self.input.intervals[id];
       if (!covers(interval)) {
@@ -326,13 +334,8 @@ Converter.prototype.drawInstructions = function drawInstructions() {
           }
         }
       }
-      var value;
-      if (interval.value.type === 'virtual')
-        value = 'v' + interval.value.id;
-      else if (interval.value.type === 'register')
-        value = interval.value.id;
-      else
-        value = 's' + interval.value.index;
+
+      var value = value_to_str(interval.value);
 
       var parent = interval.parent !== null ? interval.parent : interval.id;
       return '<tspan ' +
@@ -372,10 +375,10 @@ Converter.prototype.drawInstructions = function drawInstructions() {
       // Print gap state
       res += ' [';
       res += instr.gap_state.actions.map(function(act) {
-        return interval_to_str(act.from) +
+        return value_to_str(act.from) +
                (act.type === 'move' ? ' =&gt; ' :
                                       ' &lt;=&gt; ') +
-               interval_to_str(act.to);
+               value_to_str(act.to);
       }).join(', ');
       res += ']';
     }
