@@ -120,13 +120,13 @@ describe('Linearscan.js', function() {
       $rbx = literal %42
       branch $rax, $rbx
     block B3 -> B2
+      gap {$rax => $rbx}
       $rax = literal %1
       $rax = revadd $rbx, $rax
       gap {$rax => $rcx}
       print $rcx {$rcx => [0]}
       $rbx = to_phi [0]
     block B4
-      gap {$rbx => $rax}
       ret $rax
   */});
 });
