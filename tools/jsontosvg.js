@@ -88,9 +88,10 @@ Converter.prototype.tag = function tag(tag, attrs, body) {
 Converter.prototype.start = function start(data) {
   this.input = JSON.parse(data);
 
-  this.input.blocksMap = {};
-  this.input.blocks.forEach(function(block) {
-    this.input.blocksMap[block.id] = block;
+  this.input.blockMap = {};
+  this.input.blocks.forEach(function(block, i) {
+    this.input.blockMap[block.id] = block;
+    block.index = i;
   }, this);
 
   this.tag('svg', {
@@ -386,7 +387,7 @@ Converter.prototype.drawInstructions = function drawInstructions() {
   }).forEach(function(key, i) {
     var instr = this.input.instructions[key];
     var markerY = this.offset.top + i * this.instruction.height;
-    var depthOffset = this.input.blocksMap[instr.block].loop_depth * 8;
+    var depthOffset = this.input.blockMap[instr.block].loop_depth * 8;
 
     // Draw marker
     this.tag('rect', {
@@ -454,10 +455,10 @@ Converter.prototype.drawArrows = function drawArrows(block) {
 
   block.successors.forEach(function(succ) {
     // Ignore consequent blocks
-    var cons = succ === block.id + 1;
+    var cons = this.input.blockMap[succ].index === block.index + 1;
     offset = cons ? rect.height / 2 : 0;
 
-    var target = this.input.blocksMap[succ];
+    var target = this.input.blockMap[succ];
     var targetRect = this.getBlockRect(target);
     this.drawArrow({
       x: rect.x + (cons ? rect.width : rect.width / 2),
