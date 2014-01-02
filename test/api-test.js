@@ -222,4 +222,33 @@ describe('Linearscan.js', function() {
       gap {[0] => $rax}
       $rax = add $rdx, $rax
   */});
+
+  test('if else', config, function() {/*
+    block B1 -> B2, B3
+      one = literal %1
+      zero = literal %0
+      branch zero, one
+    block B2 -> B4
+      true = literal %true
+      to_phi true, res
+    block B3 -> B4
+      false = literal %false
+      to_phi false, res
+    block B4
+      res = phi
+      r = add res, one
+      ret r
+  */}, function() {/*
+    block B1 -> B2, B3
+      $rax = literal %1
+      $rbx = literal %0
+      branch $rbx, $rax
+    block B3 -> B4
+      $rbx = literal %false
+    block B2 -> B4
+      $rbx = literal %true
+    block B4
+      $rax = add $rbx, $rax
+      ret $rax
+  */});
 });
