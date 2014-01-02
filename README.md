@@ -76,7 +76,7 @@ console.log(require('util').inspect(out, false, 300));
 
 Will output:
 
-```json
+```javascript
 [ { id: 'B1',
     instructions:
      [ { id: 'one',
@@ -149,7 +149,7 @@ final phi value, that must be declared with `<id> = phi` in a successor block.
 
 The IL code above will generate following JSON output:
 
-```json
+```javascript
 [ { id: 'B1',
     instructions:
      [ { id: 'a',
