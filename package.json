@@ -1,6 +1,6 @@
 {
   "name": "linearscan",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Linearscan register allocator",
   "main": "lib/linearscan.js",
   "scripts": {
@@ -24,6 +24,5 @@
   "devDependencies": {
     "mocha": "~1.16.2"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }
