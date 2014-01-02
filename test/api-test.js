@@ -29,7 +29,7 @@ describe('Linearscan.js', function() {
         return out.join('\n');
       }
 
-      // console.log(JSON.stringify(l.toJSON()));
+//      console.log(JSON.stringify(l.toJSON()));
       assert.equal(
         strip(fixtures.representation.stringify(output)),
         strip(expected));
@@ -65,7 +65,7 @@ describe('Linearscan.js', function() {
     }
   };
 
-  test('loop', config, function() {/*
+  test('loop with add', config, function() {/*
     block B1 -> B2
       zero = literal %0
       to_phi zero, index
@@ -183,7 +183,7 @@ describe('Linearscan.js', function() {
         $rcx = add $rcx, $rdx
         gap {$rcx => [0]}
         $rcx = add $rbx, $rdx
-        print $rcx {$rax => [3], $rcx => [1], $rcx => [2]}
+        print $rcx {$rax => [3], [0] => [1], $rcx => [2]}
         $rcx = to_phi [1]
         $rax = to_phi [2]
         gap {$rax => $rbx, [3] => $rax}
