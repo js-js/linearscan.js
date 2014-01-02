@@ -1,6 +1,5 @@
 var assert = require('assert');
 var util = require('util');
-var fixtures = require('./fixtures');
 
 var linearscan = require('..');
 
@@ -14,7 +13,7 @@ describe('Linearscan.js', function() {
         .replace(/^function\s*\(\)\s*{\/\*|\*\/}$/g, '');
 
     it('should support ' + name, function() {
-      var data = fixtures.representation.parse(src);
+      var data = linearscan.parse(src);
       var output = l.run(data);
 
       function strip(source) {
@@ -29,9 +28,8 @@ describe('Linearscan.js', function() {
         return out.join('\n');
       }
 
-      assert.equal(
-        strip(fixtures.representation.stringify(output)),
-        strip(expected));
+      assert.equal(strip(linearscan.stringify(output)),
+                   strip(expected));
     });
   }
 
