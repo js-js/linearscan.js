@@ -29,6 +29,7 @@ describe('Linearscan.js', function() {
         return out.join('\n');
       }
 
+      // console.log(JSON.stringify(l.toJSON()));
       assert.equal(
         strip(fixtures.representation.stringify(output)),
         strip(expected));
@@ -87,8 +88,7 @@ describe('Linearscan.js', function() {
       branch $rax, $rbx
     block B3 -> B2
       $rbx = literal %1
-      $rax = add $rax, $rbx
-      gap {$rax => $rcx}
+      $rcx = add $rax, $rbx
       print $rcx {$rcx => [0]}
       $rax = to_phi [0]
     block B4
@@ -113,17 +113,18 @@ describe('Linearscan.js', function() {
   */}, function() {/*
     block B1 -> B2
       $rax = literal %0
+      $rbx = to_phi $rax
     block B2 -> B3, B4
-      $rbx = literal %42
-      branch $rax, $rbx
+      $rax = literal %42
+      branch $rbx, $rax
     block B3 -> B2
-      gap {$rax => $rbx}
       $rax = literal %1
-      $rax = revadd $rbx, $rax
-      gap {$rax => $rcx}
+      $rcx = revadd $rbx, $rax
       print $rcx {$rcx => [0]}
       $rax = to_phi [0]
+      gap {$rax => $rbx}
     block B4
+      gap {$rbx => $rax}
       ret $rax
   */});
 
@@ -158,10 +159,10 @@ describe('Linearscan.js', function() {
       block B6 -> B7
         one2 = literal %1
         i1 = add i, one2
-        to_phi i1, i
 
     block B7 -> B2
       to_phi counter1, counter
+      to_phi i1, i
     block B8
       ret counter
   */}, function() {/*
@@ -180,18 +181,19 @@ describe('Linearscan.js', function() {
       block B5 -> B4
         $rdx = literal %1
         $rcx = add $rcx, $rdx
-        $rbx = add $rbx, $rdx
-        gap {$rbx => $rcx}
-        print $rcx {$rax => [2], $rcx => [0], $rcx => [1]}
-        $rcx = to_phi [0]
-        $rbx = to_phi [1]
+        gap {$rcx => [0]}
+        $rcx = add $rbx, $rdx
+        print $rcx {$rax => [3], $rcx => [1], $rcx => [2]}
+        $rcx = to_phi [1]
+        $rax = to_phi [2]
+        gap {$rax => $rbx, [3] => $rax}
       block B6 -> B7
+        gap {$rax <=> $rbx}
         $rcx = literal %1
-        $rax = add $rax, $rcx
+        $rbx = add $rbx, $rcx
 
     block B7 -> B2
-      $rax = to_phi $rbx
-      gap {$rax => $rbx}
+      gap {$rbx <=> $rax}
     block B8
       gap {$rbx => $rax}
       ret $rax
