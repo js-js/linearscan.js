@@ -198,4 +198,29 @@ describe('Linearscan.js', function() {
       gap {$rbx => $rax}
       ret $rax
   */});
+
+  test('spilling', config, function() {/*
+    block B1
+      a = literal %0
+      b = literal %1
+      c = literal %2
+      d = literal %3
+      e = literal %4
+      add a, b
+      add b, c
+      add c, d
+      add d, e
+  */}, function() {/*
+    block B1
+      $rax = literal %0
+      $rbx = literal %1
+      $rcx = literal %2
+      $rdx = literal %3
+      [0] = literal %4
+      $rax = add $rax, $rbx
+      $rax = add $rbx, $rcx
+      $rax = add $rcx, $rdx
+      gap {[0] => $rax}
+      $rax = add $rdx, $rax
+  */});
 });
