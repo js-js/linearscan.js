@@ -29,7 +29,6 @@ describe('Linearscan.js', function() {
         return out.join('\n');
       }
 
-//      console.log(JSON.stringify(l.toJSON()));
       assert.equal(
         strip(fixtures.representation.stringify(output)),
         strip(expected));
