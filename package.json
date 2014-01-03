@@ -1,6 +1,6 @@
 {
   "name": "linearscan",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Linearscan register allocator",
   "main": "lib/linearscan.js",
   "scripts": {
