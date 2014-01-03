@@ -58,6 +58,16 @@ describe('Linearscan.js', function() {
         inputs: [ { type: 'register', id: 'rcx' } ],
         call: true
       },
+      tmp: {
+        output: null,
+        scratch: [ { type: 'register' } ]
+      },
+      tmpCall: {
+        output: null,
+        inputs: [ { type: 'register' } ],
+        scratch: [ { type: 'register' } ],
+        call: true
+      },
       ret: { output: null, inputs: [ { type: 'register', id: 'rax' } ] }
     }
   };
@@ -251,5 +261,64 @@ describe('Linearscan.js', function() {
     block B4
       $rax = add $rbx, $rax
       ret $rax
+  */});
+
+  test('tmp nop', config, function() {/*
+    block B1
+      a = literal %0
+      b = literal %1
+      c = literal %2
+      d = literal %3
+      e = literal %4
+      tmp
+      add a, b
+      add b, c
+      add c, d
+      add d, e
+  */}, function() {/*
+    block B1
+      $rax = literal %0
+      $rbx = literal %1
+      $rcx = literal %2
+      $rdx = literal %3
+      [0] = literal %4
+      gap {$rdx => [1]}
+      tmp |$rdx|
+      $rax = add $rax, $rbx
+      $rax = add $rbx, $rcx
+      $rax = add $rcx, [1]
+      gap {[0] => $rax}
+      $rax = add [1], $rax
+  */});
+
+  test('tmp call', config, function() {/*
+    block B1
+      a = literal %0
+      b = literal %1
+      c = literal %2
+      d = literal %3
+      e = literal %4
+      tmpCall a
+      add a, b
+      add b, c
+      add c, d
+      add d, e
+  */}, function() {/*
+    block B1
+      $rax = literal %0
+      $rbx = literal %1
+      $rcx = literal %2
+      $rdx = literal %3
+      [0] = literal %4
+      gap {$rbx => [1], $rax => [5], [1] => [2], $rcx => [3], $rdx => [4]}
+      tmpCall $rax |$rbx|
+      gap {[2] => $rbx, [5] => $rax}
+      $rax = add $rax, $rbx
+      gap {[3] => $rax}
+      $rbx = add $rbx, $rax
+      gap {[4] => $rbx}
+      $rax = add $rax, $rbx
+      gap {[0] => $rax}
+      $rax = add $rbx, $rax
   */});
 });

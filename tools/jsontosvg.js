@@ -366,7 +366,7 @@ Converter.prototype.drawInstructions = function drawInstructions() {
     if (instr.temporary.length > 0) {
       res += ' | tmp: ';
       instr.temporary.forEach(function(tmp, i) {
-        res += interval_to_str(tmp);
+        res += interval_to_str(tmp.id);
         if (i !== instr.temporary.length - 1) res += ', ';
       });
     }
