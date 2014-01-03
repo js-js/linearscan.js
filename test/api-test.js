@@ -192,11 +192,11 @@ describe('Linearscan.js', function() {
         $rcx = add $rcx, $rdx
         gap {$rcx => [0]}
         $rcx = add $rbx, $rdx
-        gap {$rax => [3], [0] => [1], $rcx => [2]}
+        gap {$rax => [2], $rcx => [1]}
         print $rcx
-        $rcx = to_phi [1]
-        $rax = to_phi [2]
-        gap {$rax => $rbx, [3] => $rax}
+        $rcx = to_phi [0]
+        $rax = to_phi [1]
+        gap {$rax => $rbx, [2] => $rax}
       block B6 -> B7
         gap {$rax <=> $rbx}
         $rcx = literal %1
@@ -310,13 +310,13 @@ describe('Linearscan.js', function() {
       $rcx = literal %2
       $rdx = literal %3
       [0] = literal %4
-      gap {$rbx => [1], $rax => [5], [1] => [2], $rcx => [3], $rdx => [4]}
+      gap {$rbx => [1], $rax => [4], $rcx => [2], $rdx => [3]}
       tmpCall $rax |$rbx|
-      gap {[2] => $rbx, [5] => $rax}
+      gap {[1] => $rbx, [4] => $rax}
       $rax = add $rax, $rbx
-      gap {[3] => $rax}
+      gap {[2] => $rax}
       $rbx = add $rbx, $rax
-      gap {[4] => $rbx}
+      gap {[3] => $rbx}
       $rax = add $rax, $rbx
       gap {[0] => $rax}
       $rax = add $rbx, $rax
