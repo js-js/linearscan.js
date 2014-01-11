@@ -1,4 +1,5 @@
 var assert = require('assert');
+var ssa = require('ssa-ir');
 var util = require('util');
 
 var linearscan = require('..');
@@ -13,7 +14,7 @@ describe('Linearscan.js', function() {
         .replace(/^function\s*\(\)\s*{\/\*|\*\/}$/g, '');
 
     it('should support ' + name, function() {
-      var data = linearscan.parse(src);
+      var data = ssa.parse(src);
       var output = l.run(data);
 
       function strip(source) {
@@ -28,7 +29,7 @@ describe('Linearscan.js', function() {
         return out.join('\n');
       }
 
-      assert.equal(strip(linearscan.stringify(output)),
+      assert.equal(strip(ssa.stringify(output)),
                    strip(expected));
     });
   }

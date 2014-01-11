@@ -108,17 +108,7 @@ Will output:
 ## Intermediate Language
 
 You may also find it more comfortable to use custom IL for writing blocks with
-instructions:
-
-```javascript
-var out = ls.run(linearscan.parse(
-    'block B1 -> B2\n' +
-    '  one = literal %42\n' + // `%42` means js value `42`
-    '  sum = add one, one\n' +
-    'block B2\n' +
-    '  ret sum'
-));
-```
+instructions, please take a look at [SSA-IR][1] module for this.
 
 ## Phis and ToPhis
 
@@ -241,3 +231,4 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 [0]: http://en.wikipedia.org/wiki/Static_single_assignment_form
+[1]: https://github.com/indutny/ssa-ir
