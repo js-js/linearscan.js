@@ -122,9 +122,9 @@ block B1 -> B2, B3
   b = literal %1
   branch a, b
 block B2
-  to_phi a, out
+  to_phi out, a
 block B3
-  to_phi b, out
+  to_phi out, b
 block B4
   out = phi
   ret out
@@ -132,7 +132,7 @@ block B4
 
 Basically, since IR and IL is in [SSA][0] form, variables that have their value
 depend on the branching or loop iterations, should be assigned to the final
-value using `to_phi` instruction: first argument - intermediate value, second -
+value using `to_phi` instruction: second argument - intermediate value, first -
 final phi value, that must be declared with `<id> = phi` in a successor block.
 
 ## Gap

@@ -76,7 +76,7 @@ describe('Linearscan.js', function() {
   test('loop with add', config, function() {/*
     block B1 -> B2
       zero = literal %0
-      to_phi zero, index
+      to_phi index, zero
     block B2 -> B3, B4
       index = phi
       max = literal %42
@@ -85,7 +85,7 @@ describe('Linearscan.js', function() {
       one = literal %1
       sum = add index, one
       print sum
-      to_phi sum, index
+      to_phi index, sum
     block B4
       ret index
   */}, function() {/*
@@ -107,7 +107,7 @@ describe('Linearscan.js', function() {
   test('loop with revadd', config, function() {/*
     block B1 -> B2
       zero = literal %0
-      to_phi zero, index
+      to_phi index, zero
     block B2 -> B3, B4
       index = phi
       max = literal %42
@@ -116,7 +116,7 @@ describe('Linearscan.js', function() {
       one = literal %1
       sum = revadd index, one
       print sum
-      to_phi sum, index
+      to_phi index, sum
     block B4
       ret index
   */}, function() {/*
@@ -142,8 +142,8 @@ describe('Linearscan.js', function() {
     block B1 -> B2
       zero1 = literal %0
       zero2 = literal %0
-      to_phi zero1, i
-      to_phi zero2, counter
+      to_phi i, zero1
+      to_phi counter, zero2
     block B2 -> B3, B8
       i = phi
       counter = phi
@@ -152,8 +152,8 @@ describe('Linearscan.js', function() {
 
       block B3 -> B4
         zero3 = literal %0
-        to_phi zero3, j
-        to_phi counter, counter1
+        to_phi j, zero3
+        to_phi counter1, counter
       block B4 -> B5, B6
         j = phi
         counter1 = phi
@@ -164,15 +164,15 @@ describe('Linearscan.js', function() {
         j1 = add j, one1
         counter2 = add counter1, one1
         print counter2
-        to_phi j1, j
-        to_phi counter2, counter1
+        to_phi j, j1
+        to_phi counter1, counter2
       block B6 -> B7
         one2 = literal %1
         i1 = add i, one2
 
     block B7 -> B2
-      to_phi counter1, counter
-      to_phi i1, i
+      to_phi counter, counter1
+      to_phi i, i1
     block B8
       ret counter
   */}, function() {/*
@@ -242,10 +242,10 @@ describe('Linearscan.js', function() {
       branch zero, one
     block B2 -> B4
       true = literal %true
-      to_phi true, res
+      to_phi res, true
     block B3 -> B4
       false = literal %false
-      to_phi false, res
+      to_phi res, false
     block B4
       res = phi
       r = add res, one
