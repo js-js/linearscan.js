@@ -23,6 +23,6 @@
   "homepage": "https://github.com/indutny/linearscan.js",
   "devDependencies": {
     "mocha": "~1.16.2",
-    "ssa-ir": "~0.1.1"
+    "ssa-ir": "~0.2.0"
   }
 }
