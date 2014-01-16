@@ -69,6 +69,11 @@ describe('Linearscan.js', function() {
         scratch: [ { type: 'register' } ],
         call: true
       },
+      ext: {
+        output: { type: 'register', id: 'rax' },
+        inputs: [ { type: 'register', id: 'rcx' } ],
+        call: true
+      },
       ret: { output: null, inputs: [ { type: 'register', id: 'rax' } ] }
     }
   };
@@ -321,5 +326,21 @@ describe('Linearscan.js', function() {
       $rax = add $rax, $rbx
       gap {[0] => $rax}
       $rax = add $rbx, $rax
+  */});
+
+  test('call with reg output', config, function() {/*
+    block B1
+      a = literal %0
+      b = ext a
+      c = ext b
+      c = ext b
+  */}, function() {/*
+    block B1
+      $rcx = literal %0
+      $rcx = ext $rcx
+      gap {$rcx => [0]}
+      $rax = ext $rcx
+      gap {[0] => $rcx}
+      $rax = ext $rcx
   */});
 });
