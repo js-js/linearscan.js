@@ -292,9 +292,10 @@ describe('Linearscan.js', function() {
       tmp |$rdx|
       $rax = add $rax, $rbx
       $rax = add $rbx, $rcx
-      $rax = add $rcx, [1]
-      gap {[0] => $rax}
-      $rax = add [1], $rax
+      gap {[1] => $rax}
+      $rbx = add $rcx, $rax
+      gap {[0] => $rbx}
+      $rax = add $rax, $rbx
   */});
 
   test('tmp call', config, function() {/*
