@@ -337,8 +337,8 @@ describe('Linearscan.js', function() {
   */}, function() {/*
     block B1
       $rcx = literal %0
-      $rcx = ext $rcx
-      gap {$rcx => [0]}
+      $rax = ext $rcx
+      gap {$rax => $rcx, $rcx => [0]}
       $rax = ext $rcx
       gap {[0] => $rcx}
       $rax = ext $rcx
@@ -353,8 +353,8 @@ describe('Linearscan.js', function() {
   */}, function() {/*
     block B1
       $rcx = literal %0 # 0
-      $rcx = ext $rcx # 1
-      gap {$rcx => [0]}
+      $rax = ext $rcx # 1
+      gap {$rax => $rcx, $rcx => [0]}
       $rax = ext $rcx # 2
       gap {[0] => $rcx}
       $rax = ext $rcx # 3
