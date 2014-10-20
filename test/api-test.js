@@ -5,6 +5,56 @@ var util = require('util');
 var linearscan = require('..');
 
 describe('Linearscan.js', function() {
+  function equalLines(actual, expected) {
+    if (actual === expected)
+      return;
+
+    var actualLines = actual.split('\n');
+    var expectedLines = expected.split('\n');
+    var width = 0;
+
+    expectedLines.unshift('    expected:');
+    actualLines.unshift('    actual:');
+    var total = Math.max(actualLines.length, expectedLines.length);
+
+    if (actualLines.length !== total) {
+      for (var i = actualLines.length; i < total; i++)
+        actualLines.push('');
+    } else {
+      for (var i = expectedLines.length; i < total; i++)
+        expectedLines.push('');
+    }
+
+    for (var i = 0; i < total; i++) {
+      width = Math.max(width, actualLines[i].length);
+      width = Math.max(width, expectedLines[i].length);
+    }
+
+    var out = '';
+    for (var i = 0; i < total; i++) {
+      var left = expectedLines[i];
+      var right = actualLines[i];
+
+      if (left !== right)
+        out += '\033[31m';
+      else
+        out += '\033[32m';
+
+      out += left;
+      for (var j = left.length; j < width; j++)
+        out += ' ';
+
+      out += '  |  ';
+      out += right;
+
+      out += '\033[0m';
+
+      out += '\n';
+    }
+
+    throw new Error('SSA output mismatch:\n\n' + out + '\n' + actual);
+  }
+
   function test(name, config, input, expected) {
     var l = linearscan.create(config);
 
@@ -29,8 +79,7 @@ describe('Linearscan.js', function() {
         return out.join('\n');
       }
 
-      assert.equal(strip(ssa.stringify(output)),
-                   strip(expected));
+      equalLines(strip(ssa.stringify(output)), strip(expected));
     });
   }
 
@@ -67,6 +116,11 @@ describe('Linearscan.js', function() {
         output: null,
         inputs: [ { type: 'register' } ],
         scratch: [ { type: 'register' } ],
+        call: true
+      },
+      tmpCall2: {
+        output: { type: 'register' },
+        inputs: [ { type: 'register' }, { type: 'register' } ],
         call: true
       },
       ext: {
@@ -359,5 +413,27 @@ describe('Linearscan.js', function() {
       $rax = ext $rcx # 2
       gap {[0] => $rcx}
       $rax = ext $rcx # 3
+  */});
+
+  test('tmp call with two args', config, function() {/*
+    block B1
+      a = literal %0
+      b = literal %1
+      t1 = tmpCall2 a, b
+      c = literal %2
+      d = literal %3
+      t2 = tmpCall2 c, d
+      r = tmpCall2 t1, t2
+  */}, function() {/*
+    block B1
+      $rax = literal %0
+      $rbx = literal %1
+      $rax = tmpCall2 $rax, $rbx
+      $rbx = literal %2
+      $rcx = literal %3
+      gap {$rax => [0]}
+      $rax = tmpCall2 $rbx, $rcx
+      gap {[0] => $rbx}
+      $rax = tmpCall2 $rbx, $rax
   */});
 });
