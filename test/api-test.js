@@ -108,27 +108,32 @@ describe('Linearscan.js', function() {
       print: {
         output: null,
         inputs: [ { type: 'register', id: 'rcx' } ],
+        shallow: true,
         call: true
       },
       tmp: {
         output: null,
         scratch: [ { type: 'register' } ],
+        shallow: true,
         shallow: true
       },
       tmpCall: {
         output: null,
         inputs: [ { type: 'register' } ],
         scratch: [ { type: 'register' } ],
+        shallow: true,
         call: true
       },
       tmpCall2: {
         output: { type: 'register' },
         inputs: [ { type: 'register' }, { type: 'register' } ],
+        shallow: true,
         call: true
       },
       ext: {
         output: { type: 'register', id: 'rax' },
         inputs: [ { type: 'register', id: 'rcx' } ],
+        shallow: true,
         call: true
       },
       ret: { output: null, inputs: [ { type: 'register', id: 'rax' } ] }
