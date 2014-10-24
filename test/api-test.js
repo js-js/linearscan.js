@@ -136,6 +136,10 @@ describe('Linearscan.js', function() {
         shallow: true,
         call: true
       },
+      fixedOut: {
+        output: { type: 'register', id: 'rax' },
+        inputs: [ { type: 'register' } ]
+      },
       ret: { output: null, inputs: [ { type: 'register', id: 'rax' } ] }
     }
   };
@@ -440,5 +444,18 @@ describe('Linearscan.js', function() {
       $rax = tmpCall2 $rbx, $rcx
       gap {[0] => $rbx}
       $rax = tmpCall2 $rbx, $rax
+  */});
+
+  test('two fixedOut', config, function() {/*
+    block B1
+      l = literal %1
+      a = fixedOut l
+      b = fixedOut a
+  */}, function() {/*
+    block B1
+      $rbx = literal %1
+      $rax = fixedOut $rbx
+      gap {$rax => $rbx}
+      $rax = fixedOut $rbx
   */});
 });
