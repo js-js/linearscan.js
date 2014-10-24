@@ -90,14 +90,16 @@ describe('Linearscan.js', function() {
       literal: { inputs: [ { type: 'js' } ] },
       add: {
         output: { type: 'register' },
-        inputs: [ { type: 'register' }, { type: 'register' } ]
+        inputs: [ { type: 'register' }, { type: 'register' } ],
+        shallow: true
       },
       revadd: {
         output: { type: 'register' },
         inputs: [
           { type: 'register', id: 'rbx' },
           { type: 'register', id: 'rax' }
-        ]
+        ],
+        shallow: true
       },
       branch: {
         output: null,
@@ -110,7 +112,8 @@ describe('Linearscan.js', function() {
       },
       tmp: {
         output: null,
-        scratch: [ { type: 'register' } ]
+        scratch: [ { type: 'register' } ],
+        shallow: true
       },
       tmpCall: {
         output: null,
@@ -181,19 +184,17 @@ describe('Linearscan.js', function() {
   */}, function() {/*
     block B1 -> B2
       $rax = literal %0
-      $rbx = to_phi $rax
     block B2 -> B3, B4
-      $rax = literal %42
-      branch $rbx, $rax
+      $rbx = literal %42
+      branch $rax, $rbx
     block B3 -> B2
+      gap {$rax => $rbx}
       $rax = literal %1
       $rcx = revadd $rbx, $rax
       gap {$rcx => [0]}
       print $rcx
       $rax = to_phi [0]
-      gap {$rax => $rbx}
     block B4
-      gap {$rbx => $rax}
       ret $rax
   */});
 
@@ -241,7 +242,6 @@ describe('Linearscan.js', function() {
     block B2 -> B3, B8
       $rcx = literal %42
       branch $rax, $rcx
-
       block B3 -> B4
         $rcx = literal %0
       block B4 -> B5, B6
@@ -250,19 +250,19 @@ describe('Linearscan.js', function() {
       block B5 -> B4
         $rdx = literal %1
         $rcx = add $rcx, $rdx
-        gap {$rcx => [0]}
-        $rcx = add $rbx, $rdx
-        gap {$rax => [2], $rcx => [1]}
+        $rbx = add $rbx, $rdx
+        gap {$rcx => [0], $rbx => $rcx, $rax => [2], $rcx => [1]}
         print $rcx
         $rcx = to_phi [0]
-        $rax = to_phi [1]
-        gap {$rax => $rbx, [2] => $rax}
+        $rbx = to_phi [1]
+        gap {[2] => $rax}
       block B6 -> B7
-        gap {$rax <=> $rbx}
         $rcx = literal %1
-        $rbx = add $rbx, $rcx
-
+        $rax = add $rax, $rcx
+        gap {$rax => [2]}
     block B7 -> B2
+      $rax = to_phi $rbx
+      $rbx = to_phi [2]
       gap {$rbx <=> $rax}
     block B8
       gap {$rbx => $rax}
