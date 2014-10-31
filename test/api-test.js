@@ -323,10 +323,10 @@ describe('Linearscan.js', function() {
       $rax = literal %1
       $rbx = literal %0
       branch $rbx, $rax
-    block B3 -> B4
-      $rbx = literal %false
     block B2 -> B4
       $rbx = literal %true
+    block B3 -> B4
+      $rbx = literal %false
     block B4
       $rax = add $rbx, $rax
       ret $rax
