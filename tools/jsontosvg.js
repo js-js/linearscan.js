@@ -2,6 +2,12 @@
 
 var assert = require('assert');
 
+function htmlEscape(value) {
+  return (value || '').replace(/</g, '&lt;')
+                      .replace(/>/g, '&gt;')
+                      .replace(/"/g, '&quot;');
+}
+
 function Converter(options) {
   this.input = options.input || process.stdin;
   this.output = options.output || process.stdout;
@@ -98,7 +104,7 @@ Converter.prototype.start = function start(data) {
     version: '1.1',
     baseProfile: 'full',
     xmlns: 'http://www.w3.org/2000/svg',
-    onmouseout: 'clear()'
+    style: 'width: 6000px; height: 6000px;'
   }, this.draw.bind(this));
 };
 
@@ -347,7 +353,7 @@ Converter.prototype.drawInstructions = function drawInstructions() {
     var res = '';
     if (instr.output !== null)
       res += interval_to_str(instr.output) + ' = ';
-    res += instr.kind;
+    res += htmlEscape(instr.kind);
 
     if (instr.inputs.length > 0) {
       res += '(';
@@ -357,7 +363,7 @@ Converter.prototype.drawInstructions = function drawInstructions() {
           res += interval_to_str(input);
         } else {
           assert.equal(input_instr.type, 'js');
-          res += JSON.stringify(input_instr.value);
+          res += htmlEscape(JSON.stringify(input_instr.value));
         }
         if (i !== instr.inputs.length - 1) res += ', ';
       });
@@ -395,7 +401,7 @@ Converter.prototype.drawInstructions = function drawInstructions() {
     // Draw marker
     this.tag('rect', {
       'class': 'instruction-marker c-' + key,
-      onmouseover: 'h({c:' + instr.id + '})',
+      onclick: 'h({c:' + instr.id + '})',
       x: this.offset.left,
       y: markerY,
       width: this.instruction.marker.width - this.instruction.marker.padding +
@@ -404,7 +410,7 @@ Converter.prototype.drawInstructions = function drawInstructions() {
     });
     this.tag('text', {
       'class': 'instruction-marker-text',
-      onmouseover: 'h({c:' + instr.id + '})',
+      onclick: 'h({c:' + instr.id + '})',
       x: this.offset.left + 4 + depthOffset,
       y: markerY + this.instruction.height / 2
     }, key);
@@ -412,7 +418,7 @@ Converter.prototype.drawInstructions = function drawInstructions() {
     // Draw text
     this.tag('text', {
       'class': 'instruction-text',
-      onmouseover: 'h({c:' + instr.id + '})',
+      onclick: 'h({c:' + instr.id + '})',
       x: this.offset.left + this.instruction.marker.width + depthOffset,
       y: markerY + this.instruction.height / 2
     }, stringify(instr));
@@ -530,7 +536,7 @@ Converter.prototype.drawInterval = function drawInterval(interval, i) {
       this.tag('rect', {
         'class': (getEdgeId(c) === interval.id ? 'r-' + parent.id  : '') +
                  ' c-' + c + ' interval-empty',
-        onmouseover: 'h({r:' + parent.id + ',c:' + c + '})',
+        onclick: 'h({r:' + parent.id + ',c:' + c + '})',
         x: this.getX(c * this.interval.width),
         y: y,
         width: this.interval.width -
@@ -544,7 +550,7 @@ Converter.prototype.drawInterval = function drawInterval(interval, i) {
   interval.ranges.forEach(function(range) {
     for (var c = range.start; c < range.end; c++) {
       this.tag('rect', {
-        onmouseover: 'h({r:' + parent.id + ',c:' + c + '})',
+        onclick: 'h({r:' + parent.id + ',c:' + c + '})',
         x: this.getX(c * this.interval.width),
         y: y + this.interval.range.padding,
         width: this.interval.width -
@@ -559,7 +565,7 @@ Converter.prototype.drawInterval = function drawInterval(interval, i) {
   // Draw uses
   interval.uses.forEach(function(use) {
     this.tag('rect', {
-      onmouseover: 'h({r:' + parent.id + ',c: ' + use.pos + '})',
+      onclick: 'h({r:' + parent.id + ',c: ' + use.pos + '})',
       x: this.getX(use.pos * this.interval.width),
       y: y,
       width: this.use.width,
