@@ -170,7 +170,7 @@ describe('Linearscan.js', function() {
       $rcx = add $rax, $rbx
       gap {$rcx => [0]}
       print $rcx
-      $rax = to_phi [0]
+      gap {[0] => $rax}
     block B4
       ret $rax
   */});
@@ -202,7 +202,7 @@ describe('Linearscan.js', function() {
       $rcx = revadd $rbx, $rax
       gap {$rcx => [0]}
       print $rcx
-      $rax = to_phi [0]
+      gap {[0] => $rax}
     block B4
       ret $rax
   */});
@@ -262,16 +262,16 @@ describe('Linearscan.js', function() {
         $rbx = add $rbx, $rdx
         gap {$rcx => [0], $rbx => $rcx, $rax => [2], $rcx => [1]}
         print $rcx
-        $rcx = to_phi [0]
-        $rbx = to_phi [1]
+        gap {[0] => $rcx}
+        gap {[1] => $rbx}
         gap {[2] => $rax}
       block B6 -> B7
         $rcx = literal %1
         $rax = add $rax, $rcx
         gap {$rax => [2]}
     block B7 -> B2
-      $rax = to_phi $rbx
-      $rbx = to_phi [2]
+      gap {$rbx => $rax}
+      gap {[2] => $rbx}
       gap {$rbx <=> $rax}
     block B8
       gap {$rbx => $rax}

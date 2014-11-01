@@ -14,7 +14,8 @@ function Converter(options) {
 
   this.offset = {
     top: 8,
-    left: 8
+    left: 8,
+    lineId: 24
   };
   this.annotation = {
     width: 280,
@@ -109,7 +110,7 @@ Converter.prototype.start = function start(data) {
 };
 
 Converter.prototype.getX = function getX(x) {
-  return this.offset.left + this.annotation.width + x;
+  return this.offset.left + this.annotation.width + this.offset.lineId + x;
 };
 
 Converter.prototype.getY = function getY(y) {
@@ -174,7 +175,7 @@ Converter.prototype.drawStyles = function drawStyles() {
     .instruction-text {
       font-size: 12px;
     }
-    .instruction-marker-text {
+    .instruction-marker-text, .interval-id {
       font-size: 8px;
     }
     .arrow { stroke: #333; fill: transparent; }
@@ -529,6 +530,14 @@ Converter.prototype.drawInterval = function drawInterval(interval, i) {
   }
 
   var y = this.getY(this.block.titleHeight + this.interval.height * i);
+
+  this.tag('text', {
+    'class': 'interval-id',
+    x: this.offset.left + this.annotation.width,
+    y: y + this.interval.height / 2,
+    'font-family': 'Raleway',
+    'dominant-baseline': 'middle'
+  }, i);
 
   // Draw interval
   this.input.blocks.forEach(function(block) {
