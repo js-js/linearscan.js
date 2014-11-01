@@ -175,6 +175,9 @@ Converter.prototype.drawStyles = function drawStyles() {
     .instruction-text {
       font-size: 12px;
     }
+    .instruction-removed {
+      fill: #999;
+    }
     .instruction-marker-text, .interval-id {
       font-size: 8px;
     }
@@ -418,7 +421,8 @@ Converter.prototype.drawInstructions = function drawInstructions() {
 
     // Draw text
     this.tag('text', {
-      'class': 'instruction-text',
+      'class': 'instruction-text ' +
+          (instr.removed ? 'instruction-removed' : ''),
       onclick: 'h({c:' + instr.id + '})',
       x: this.offset.left + this.instruction.marker.width + depthOffset,
       y: markerY + this.instruction.height / 2
