@@ -262,17 +262,13 @@ describe('Linearscan.js', function() {
         $rbx = add $rbx, $rdx
         gap {$rcx => [0], $rbx => $rcx, $rax => [2], $rcx => [1]}
         print $rcx
-        gap {[0] => $rcx}
-        gap {[1] => $rbx}
-        gap {[2] => $rax}
+        gap {[0] => $rcx, [1] => $rbx, [2] => $rax}
       block B6 -> B7
         $rcx = literal %1
         $rax = add $rax, $rcx
         gap {$rax => [2]}
     block B7 -> B2
-      gap {$rbx => $rax}
-      gap {[2] => $rbx}
-      gap {$rbx <=> $rax}
+      gap {$rbx => $rax, [2] => $rbx, $rbx <=> $rax}
     block B8
       gap {$rbx => $rax}
       ret $rax
