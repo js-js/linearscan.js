@@ -143,6 +143,10 @@ describe('Linearscan.js', function() {
         output: { type: 'register', id: 'rax' },
         inputs: [ { type: 'register' } ]
       },
+      clone: {
+        output: { type: 'register', id: 'rax' },
+        inputs: [ { type: 'register', id: 'rax' } ]
+      },
       ret: { output: null, inputs: [ { type: 'register', id: 'rax' } ] }
     }
   };
@@ -497,5 +501,15 @@ describe('Linearscan.js', function() {
       gap {$rbx => $rax}
       ret $rax
       gap {$rax => ☠ }
+  */});
+
+  test('taint with overwrite', config, function() {/*
+    block B1
+      t1 = taint
+      clone t1
+  */}, function() {/*
+    block B1
+      $rax = taint
+      $rax = clone $rax
   */});
 });
