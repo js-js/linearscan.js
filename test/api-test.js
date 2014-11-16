@@ -486,19 +486,18 @@ describe('Linearscan.js', function() {
     block B2
       ret t2
     block B3
-      ret t2
+      ret t1
   */}, function() {/*
     block B1 -> B2, B3
       $rax = taint
       $rbx = taint
       branch $rax, $rax
-      gap {☠  => $rax}
     block B2
       gap {$rbx => $rax}
       ret $rax
       gap {☠  => $rax}
     block B3
-      gap {$rbx => $rax}
+      gap {☠  => $rbx}
       ret $rax
       gap {☠  => $rax}
   */});
