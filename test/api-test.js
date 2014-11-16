@@ -473,9 +473,9 @@ describe('Linearscan.js', function() {
       $rbx = taint
       $rax = taint
       $rcx = revadd $rbx, $rax
-      gap {$rbx => $rcx, $rax => ☠ }
+      gap {$rbx => $rcx, ☠  => $rax}
       print $rcx
-      gap {$rcx => ☠ }
+      gap {☠  => $rcx}
   */});
 
   test('taint in branch', config, function() {/*
@@ -492,15 +492,15 @@ describe('Linearscan.js', function() {
       $rax = taint
       $rbx = taint
       branch $rax, $rax
-      gap {$rax => ☠ }
+      gap {☠  => $rax}
     block B2
       gap {$rbx => $rax}
       ret $rax
-      gap {$rax => ☠ }
+      gap {☠  => $rax}
     block B3
       gap {$rbx => $rax}
       ret $rax
-      gap {$rax => ☠ }
+      gap {☠  => $rax}
   */});
 
   test('taint with overwrite', config, function() {/*
