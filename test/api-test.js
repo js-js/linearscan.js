@@ -512,4 +512,22 @@ describe('Linearscan.js', function() {
       $rax = taint
       $rax = clone $rax
   */});
+
+  test('taint with move overwrite', config, function() {/*
+    block B1
+      x = literal %1
+      t1 = literal %2
+      t2 = taint
+      revadd t1, t2
+      ret x
+  */}, function() {/*
+    block B1
+      $rax = literal %1
+      $rbx = literal %2
+      $rcx = taint
+      gap {$rax => [0], $rcx => $rax}
+      $rcx = revadd $rbx, $rax
+      gap {[0] => $rax}
+      ret $rax
+  */});
 });
