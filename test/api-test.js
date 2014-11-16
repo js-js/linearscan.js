@@ -1,5 +1,5 @@
 var assert = require('assert');
-var ssa = require('ssa-ir');
+var ir = require('cfg-ir');
 var util = require('util');
 
 var linearscan = require('..');
@@ -64,7 +64,7 @@ describe('Linearscan.js', function() {
         .replace(/^function\s*\(\)\s*{\/\*|\*\/}$/g, '');
 
     it('should support ' + name, function() {
-      var data = ssa.parse(src);
+      var data = ir.parse(src);
       var output = l.run(data);
 
       function strip(source) {
@@ -79,7 +79,7 @@ describe('Linearscan.js', function() {
         return out.join('\n');
       }
 
-      equalLines(strip(ssa.stringify(output)), strip(expected));
+      equalLines(strip(ir.stringify(output)), strip(expected));
     });
   }
 
@@ -101,6 +101,10 @@ describe('Linearscan.js', function() {
         ],
         shallow: true
       },
+      taint: {
+        output: { type: 'register' },
+        tainted: true
+      },
       branch: {
         output: null,
         inputs: [ { type: 'register' }, { type: 'register' } ]
@@ -114,7 +118,6 @@ describe('Linearscan.js', function() {
       tmp: {
         output: null,
         scratch: [ { type: 'register' } ],
-        shallow: true,
         shallow: true
       },
       tmpCall: {
@@ -453,5 +456,46 @@ describe('Linearscan.js', function() {
       $rax = fixedOut $rbx
       gap {$rax => $rbx}
       $rax = fixedOut $rbx
+  */});
+
+  test('taint', config, function() {/*
+    block B1
+      t1 = taint
+      t2 = taint
+      revadd t1, t2
+      print t1
+  */}, function() {/*
+    block B1
+      $rbx = taint
+      $rax = taint
+      $rcx = revadd $rbx, $rax
+      gap {$rbx => $rcx, $rax => ☠ }
+      print $rcx
+      gap {$rcx => ☠ }
+  */});
+
+  test('taint in branch', config, function() {/*
+    block B1 -> B2, B3
+      t1 = taint
+      t2 = taint
+      branch t1, t1
+    block B2
+      ret t2
+    block B3
+      ret t2
+  */}, function() {/*
+    block B1 -> B2, B3
+      $rax = taint
+      $rbx = taint
+      branch $rax, $rax
+      gap {$rax => ☠ }
+    block B2
+      gap {$rbx => $rax}
+      ret $rax
+      gap {$rax => ☠ }
+    block B3
+      gap {$rbx => $rax}
+      ret $rax
+      gap {$rax => ☠ }
   */});
 });
