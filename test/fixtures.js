@@ -12,5 +12,7 @@ exports.createBuilder = function createBuilder(source) {
     cfg: true
   }, 'printable');
 
+  p.reindex();
+
   return linearscan.builder.create(p);
 };

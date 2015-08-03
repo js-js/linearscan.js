@@ -57,6 +57,15 @@ describe('Interval Builder/Interval', function() {
       assert(interval.covers(3));
       assert(!interval.covers(4));
     });
+
+    it('should update start', function() {
+      interval.addRange(1, 2);
+      interval.updateStart(0);
+
+      assert(interval.covers(0));
+      assert(interval.covers(1));
+      assert(!interval.covers(2));
+    });
   });
 
   describe('uses', function() {
