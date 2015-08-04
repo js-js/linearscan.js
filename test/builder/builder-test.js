@@ -112,4 +112,38 @@ describe('Interval Builder', function() {
       11. return [11;12)
     */});
   });
+
+  it('should generate holes', function() {
+    var b = fixtures.createBuilder(function() {/*
+      pipeline {
+        b0 {
+          i0 = literal 0
+          i1 = jump
+        }
+        b0 -> b1, b2
+
+        b1 {
+          i2 = literal 1
+          i3 = return i2
+        }
+
+        b2 {
+         i4 = return i0
+        }
+      }
+    */});
+
+    b.buildIntervals();
+
+    check(b, function() {/*
+      0. start [3;5)
+      1. region [5;7)
+      2. region [7;8)
+      3. literal [3;5), [7;7)
+      4. jump [4;5)
+      5. literal [5;6)
+      6. return [6;7)
+      7. return [7;8)
+    */});
+  });
 });
