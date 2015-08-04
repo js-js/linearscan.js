@@ -22,7 +22,7 @@ function check(b, expected) {
 }
 
 describe('Interval Builder', function() {
-  it('should populate liveIn', function() {
+  it('should work on branch', function() {
     var b = fixtures.createBuilder(function() {/*
       pipeline {
         b0 {
@@ -64,6 +64,46 @@ describe('Interval Builder', function() {
       8. ssa:phi [8;9)
       9. add [9;10)
       10. return [10;11)
+    */});
+  });
+
+  it('should work on loops', function() {
+    var b = fixtures.createBuilder(function() {/*
+      pipeline {
+        b0 {
+          i0 = literal 3
+          i1 = jump
+        }
+        b0 -> b1
+
+        b1 {
+          i2 = branch
+        }
+        b1 -> b2, b3
+
+        b2 {
+          i3 = add i0, i0
+        }
+        b2 -> b1
+
+        b3 {
+          i4 = return i0
+        }
+      }
+    */});
+
+    b.buildIntervals();
+
+    check(b, function() {/*
+      0. start [4;6)
+      1. region [6;7)
+      2. region [7;8)
+      3. region [8;9)
+      4. literal [4;8)
+      5. jump [5;6)
+      6. branch [6;7)
+      7. add [7;8)
+      8. return [8;9)
     */});
   });
 });

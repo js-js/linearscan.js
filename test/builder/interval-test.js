@@ -74,6 +74,81 @@ describe('Interval Builder/Interval', function() {
       assert.equal(interval.start(), 0);
       assert.equal(interval.end(), 3);
     });
+
+    describe('fillRange', function() {
+      it('should fill empty interval', function() {
+        interval.fillRange(0, 10);
+
+        assert.equal(interval.start(), 0);
+        assert.equal(interval.end(), 10);
+      });
+
+      it('should add chunk at interval start', function() {
+        interval.addRange(11, 12);
+        interval.fillRange(0, 10);
+
+        assert.equal(interval.ranges.length, 2);
+        assert.equal(interval.start(), 0);
+        assert.equal(interval.end(), 12);
+      });
+
+      it('should add chunk at interval end', function() {
+        interval.addRange(0, 10);
+        interval.fillRange(11, 12);
+
+        assert.equal(interval.ranges.length, 2);
+        assert.equal(interval.start(), 0);
+        assert.equal(interval.end(), 12);
+      });
+
+      it('should grow interval to the right', function() {
+        interval.addRange(0, 10);
+        interval.fillRange(8, 12);
+
+        assert.equal(interval.ranges.length, 1);
+        assert.equal(interval.start(), 0);
+        assert.equal(interval.end(), 12);
+      });
+
+      it('should grow interval to the left', function() {
+        interval.addRange(8, 12);
+        interval.fillRange(0, 10);
+
+        assert.equal(interval.ranges.length, 1);
+        assert.equal(interval.start(), 0);
+        assert.equal(interval.end(), 12);
+      });
+
+      it('should grow interval to both sides', function() {
+        interval.addRange(8, 10);
+        interval.fillRange(0, 12);
+
+        assert.equal(interval.ranges.length, 1);
+        assert.equal(interval.start(), 0);
+        assert.equal(interval.end(), 12);
+      });
+
+      it('should consume/union middle intervals', function() {
+        interval.addRange(8, 12);
+        interval.addRange(6, 7);
+        interval.addRange(3, 4);
+        interval.addRange(0, 2);
+        interval.fillRange(2, 9);
+
+        assert.equal(interval.ranges.length, 1);
+        assert.equal(interval.start(), 0);
+        assert.equal(interval.end(), 12);
+      });
+
+      it('should union with adjacent interval', function() {
+        interval.addRange(8, 12);
+        interval.fillRange(0, 8);
+
+        assert.equal(interval.ranges.length, 1);
+        assert.equal(interval.start(), 0);
+        assert.equal(interval.end(), 12);
+      });
+    });
   });
 
   describe('uses', function() {
