@@ -71,23 +71,26 @@ describe('Interval Builder', function() {
     var b = fixtures.createBuilder(function() {/*
       pipeline {
         b0 {
-          i0 = literal 3
+          i0 = literal 0
           i1 = jump
         }
         b0 -> b1
 
         b1 {
-          i2 = branch
+          i2 = ssa:phi i0, i5
+          i3 = branch
         }
         b1 -> b2, b3
 
         b2 {
-          i3 = add i0, i0
+          i4 = literal 1
+          i5 = add i2, i4
+          i6 = jump
         }
         b2 -> b1
 
         b3 {
-          i4 = return i0
+          i7 = return i2
         }
       }
     */});
@@ -96,14 +99,17 @@ describe('Interval Builder', function() {
 
     check(b, function() {/*
       0. start [4;6)
-      1. region [6;7)
-      2. region [7;8)
-      3. region [8;9)
-      4. literal [4;8)
+      1. region [6;8)
+      2. region [8;11)
+      3. region [11;12)
+      4. literal [4;6)
       5. jump [5;6)
-      6. branch [6;7)
-      7. add [7;8)
-      8. return [8;9)
+      6. ssa:phi [6;9), [11;11)
+      7. branch [7;8)
+      8. literal [8;9)
+      9. add [9;11)
+      10. jump [10;11)
+      11. return [11;12)
     */});
   });
 });
