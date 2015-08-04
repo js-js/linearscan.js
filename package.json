@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/indutny/linearscan.js",
   "devDependencies": {
+    "assert-text": "^1.1.0",
     "jscs": "^2.0.0",
     "jshint": "^2.8.0",
     "json-pipeline": "^2.2.0",

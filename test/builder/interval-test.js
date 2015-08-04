@@ -66,6 +66,14 @@ describe('Interval Builder/Interval', function() {
       assert(interval.covers(1));
       assert(!interval.covers(2));
     });
+
+    it('should support start()/end()', function() {
+      interval.addRange(0, 1);
+      interval.addRange(2, 3);
+
+      assert.equal(interval.start(), 0);
+      assert.equal(interval.end(), 3);
+    });
   });
 
   describe('uses', function() {
