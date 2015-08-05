@@ -17,7 +17,7 @@ exports.options = {
       output: 'any',
       inputs: [ 'any', 'any' ]
     },
-    ret: {
+    return: {
       inputs: [ { kind: 'register', value: 'rax' } ]
     }
   }
