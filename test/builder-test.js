@@ -12,10 +12,19 @@ function check(b, expected) {
     out += interval.node.index + '. ' + interval.node.opcode + ' ';
 
     var ranges = interval.ranges.map(function(range) {
-      return '[' + range.start + ';' + range.end + ')';
+      return range.inspect();
     }).join(', ');
 
-    out += ranges + '\n';
+    out += ranges;
+
+    var uses = interval.uses.map(function(use) {
+      return use.inspect();
+    }).join(', ');
+
+    if (uses)
+      out += ' | ' + uses;
+
+    out += '\n';
   }
 
   assertText.equal(out, fixtures.fn2str(expected));
@@ -57,12 +66,12 @@ describe('Interval Builder', function() {
       2. region [7;8)
       3. region [8;11)
 
-      4. literal [4;9)
+      4. literal [4;9) | {4=*}, {9=*}
       5. if [5;6)
-      6. literal [6;7)
-      7. literal [7;8)
-      8. ssa:phi [8;9)
-      9. add [9;10)
+      6. literal [6;7) | {6=*}, {8=*}
+      7. literal [7;8) | {7=*}, {8=*}
+      8. ssa:phi [8;9) | {8=*}, {9=*}
+      9. add [9;10) | {9=*}, {10=%rax}
       10. return [10;11)
     */});
   });
@@ -102,12 +111,12 @@ describe('Interval Builder', function() {
       1. region [6;8)
       2. region [8;11)
       3. region [11;12)
-      4. literal [4;6)
+      4. literal [4;6) | {4=*}, {6=*}
       5. jump [5;6)
-      6. ssa:phi [6;9), [11;11)
+      6. ssa:phi [6;9), [11;11) | {6=*}, {9=*}, {11=%rax}
       7. if [7;8)
-      8. literal [8;9)
-      9. add [9;11)
+      8. literal [8;9) | {8=*}, {9=*}
+      9. add [9;11) | {6=*}, {9=*}
       10. jump [10;11)
       11. return [11;12)
     */});
@@ -139,9 +148,9 @@ describe('Interval Builder', function() {
       0. start [3;5)
       1. region [5;7)
       2. region [7;8)
-      3. literal [3;5), [7;7)
+      3. literal [3;5), [7;7) | {3=*}, {7=%rax}
       4. jump [4;5)
-      5. literal [5;6)
+      5. literal [5;6) | {5=*}, {6=%rax}
       6. return [6;7)
       7. return [7;8)
     */});
