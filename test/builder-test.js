@@ -77,7 +77,7 @@ describe('Interval Builder', function() {
       21. literal [23;24) : {23=*}, {24=*}
 
       24. ssa:phi [24;27) : {26=*}, {27=*}
-      27. add [29;30) : {29=*}, {30=%rax}
+      27. add [29;30) : {29=*}, {30=%0}
       30. return (dead) [32;33)
     */});
   });
@@ -121,7 +121,7 @@ describe('Interval Builder', function() {
       12. literal [14;18) : {14=*}, {18=*}
       15. jump (dead) [17;18)
 
-      18. ssa:phi [18;27), [33;33) : {20=*}, {27=*}, {33=%rax}
+      18. ssa:phi [18;27), [33;33) : {20=*}, {27=*}, {33=%0}
       21. if (dead) [23;24)
 
       24. literal [26;27) : {26=*}, {27=*}
@@ -159,10 +159,10 @@ describe('Interval Builder', function() {
       3. region [15;21)
       6. region [21;24)
 
-      9. literal [11;15), [21;21) : {11=*}, {21=%rax}
+      9. literal [11;15), [21;21) : {11=*}, {21=%0}
       12. jump (dead) [14;15)
 
-      15. literal [17;18) : {17=*}, {18=%rax}
+      15. literal [17;18) : {17=*}, {18=%0}
       18. return (dead) [20;21)
 
       21. return (dead) [23;24)
