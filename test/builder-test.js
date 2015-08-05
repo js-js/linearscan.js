@@ -9,7 +9,10 @@ function check(b, expected) {
   var out = '';
   for (var i = 0; i < b.intervals.length; i++) {
     var interval = b.intervals[i];
-    out += interval.node.index + '. ' + interval.node.opcode + ' ';
+    out += interval.node.index * 3 + '. ' + interval.node.opcode + ' ';
+
+    if (!interval.alive)
+      out += '(dead) ';
 
     var ranges = interval.ranges.map(function(range) {
       return range.inspect();
@@ -22,7 +25,7 @@ function check(b, expected) {
     }).join(', ');
 
     if (uses)
-      out += ' | ' + uses;
+      out += ' : ' + uses;
 
     out += '\n';
   }
@@ -61,18 +64,21 @@ describe('Interval Builder', function() {
     b.buildIntervals();
 
     check(b, function() {/*
-      0. start [4;6)
-      1. region [6;7)
-      2. region [7;8)
-      3. region [8;11)
+      0. start [12;18)
+      3. region [18;21)
+      6. region [21;24)
+      9. region [24;33)
 
-      4. literal [4;9) | {4=*}, {9=*}
-      5. if [5;6)
-      6. literal [6;7) | {6=*}, {8=*}
-      7. literal [7;8) | {7=*}, {8=*}
-      8. ssa:phi [8;9) | {8=*}, {9=*}
-      9. add [9;10) | {9=*}, {10=%rax}
-      10. return [10;11)
+      12. literal [14;27) : {14=*}, {27=*}
+      15. if (dead) [17;18)
+
+      18. literal [20;21) : {20=*}, {24=*}
+
+      21. literal [23;24) : {23=*}, {24=*}
+
+      24. ssa:phi [24;27) : {26=*}, {27=*}
+      27. add [29;30) : {29=*}, {30=%rax}
+      30. return (dead) [32;33)
     */});
   });
 
@@ -107,18 +113,22 @@ describe('Interval Builder', function() {
     b.buildIntervals();
 
     check(b, function() {/*
-      0. start [4;6)
-      1. region [6;8)
-      2. region [8;11)
-      3. region [11;12)
-      4. literal [4;6) | {4=*}, {6=*}
-      5. jump [5;6)
-      6. ssa:phi [6;9), [11;11) | {6=*}, {9=*}, {11=%rax}
-      7. if [7;8)
-      8. literal [8;9) | {8=*}, {9=*}
-      9. add [9;11) | {6=*}, {9=*}
-      10. jump [10;11)
-      11. return [11;12)
+      0. start [12;18)
+      3. region [18;24)
+      6. region [24;33)
+      9. region [33;36)
+
+      12. literal [14;18) : {14=*}, {18=*}
+      15. jump (dead) [17;18)
+
+      18. ssa:phi [18;27), [33;33) : {20=*}, {27=*}, {33=%rax}
+      21. if (dead) [23;24)
+
+      24. literal [26;27) : {26=*}, {27=*}
+      27. add [29;33) : {18=*}, {29=*}
+      30. jump (dead) [32;33)
+
+      33. return (dead) [35;36)
     */});
   });
 
@@ -145,14 +155,17 @@ describe('Interval Builder', function() {
     b.buildIntervals();
 
     check(b, function() {/*
-      0. start [3;5)
-      1. region [5;7)
-      2. region [7;8)
-      3. literal [3;5), [7;7) | {3=*}, {7=%rax}
-      4. jump [4;5)
-      5. literal [5;6) | {5=*}, {6=%rax}
-      6. return [6;7)
-      7. return [7;8)
+      0. start [9;15)
+      3. region [15;21)
+      6. region [21;24)
+
+      9. literal [11;15), [21;21) : {11=*}, {21=%rax}
+      12. jump (dead) [14;15)
+
+      15. literal [17;18) : {17=*}, {18=%rax}
+      18. return (dead) [20;21)
+
+      21. return (dead) [23;24)
     */});
   });
 });
