@@ -3,7 +3,7 @@
 var assertText = require('assert-text');
 assertText.options.trim = true;
 
-var fixtures = require('../fixtures');
+var fixtures = require('./fixtures');
 
 function check(b, expected) {
   var out = '';
@@ -23,11 +23,11 @@ function check(b, expected) {
 
 describe('Interval Builder', function() {
   it('should work on branch', function() {
-    var b = fixtures.createBuilder(function() {/*
+    var b = fixtures.createBuilder(fixtures.options, function() {/*
       pipeline {
         b0 {
           i0 = literal 3
-          i1 = branch
+          i1 = if
         }
         b0 -> b1, b2
 
@@ -58,7 +58,7 @@ describe('Interval Builder', function() {
       3. region [8;11)
 
       4. literal [4;9)
-      5. branch [5;6)
+      5. if [5;6)
       6. literal [6;7)
       7. literal [7;8)
       8. ssa:phi [8;9)
@@ -68,7 +68,7 @@ describe('Interval Builder', function() {
   });
 
   it('should work on loops', function() {
-    var b = fixtures.createBuilder(function() {/*
+    var b = fixtures.createBuilder(fixtures.options, function() {/*
       pipeline {
         b0 {
           i0 = literal 0
@@ -78,7 +78,7 @@ describe('Interval Builder', function() {
 
         b1 {
           i2 = ssa:phi i0, i5
-          i3 = branch
+          i3 = if
         }
         b1 -> b2, b3
 
@@ -105,7 +105,7 @@ describe('Interval Builder', function() {
       4. literal [4;6)
       5. jump [5;6)
       6. ssa:phi [6;9), [11;11)
-      7. branch [7;8)
+      7. if [7;8)
       8. literal [8;9)
       9. add [9;11)
       10. jump [10;11)
@@ -114,7 +114,7 @@ describe('Interval Builder', function() {
   });
 
   it('should generate holes', function() {
-    var b = fixtures.createBuilder(function() {/*
+    var b = fixtures.createBuilder(fixtures.options, function() {/*
       pipeline {
         b0 {
           i0 = literal 0

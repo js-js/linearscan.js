@@ -4,7 +4,7 @@
   "description": "Linearscan register allocator",
   "main": "lib/linearscan.js",
   "scripts": {
-    "test": "jscs lib/**/**/*.js test/**/*.js && jshint lib/**/**/*.js && mocha --reporter spec test/**/*-test.js"
+    "test": "jscs lib/**/*.js test/*.js && jshint lib/**/*.js && mocha --reporter spec test/**/*-test.js"
   },
   "repository": {
     "type": "git",

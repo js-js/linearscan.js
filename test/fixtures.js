@@ -1,11 +1,33 @@
 var linearscan = require('../');
 var pipeline = require('json-pipeline');
 
+exports.options = {
+  registers: [ 'rax', 'rbx', 'rcx', 'rdx' ],
+  opcodes: {
+    literal: {
+      output: 'any'
+    },
+    if: {},
+    jump: {},
+    'ssa:phi': {
+      output: 'any',
+      inputs: [ 'any', 'any' ]
+    },
+    add: {
+      output: 'any',
+      inputs: [ 'any', 'any' ]
+    },
+    ret: {
+      inputs: [ { kind: 'register', value: 'rax' } ]
+    }
+  }
+};
+
 exports.fn2str = function fn2str(fn) {
   return fn.toString().replace(/^function[^{]+{\/\*|\*\/}$/g, '');
 };
 
-exports.createBuilder = function createBuilder(source) {
+exports.createBuilder = function createBuilder(options, source) {
   var p = pipeline.create('dominance');
 
   p.parse(exports.fn2str(source), {
@@ -14,5 +36,6 @@ exports.createBuilder = function createBuilder(source) {
 
   p.reindex();
 
-  return linearscan.builder.create(p);
+  var config = linearscan.config.create(p, options);
+  return linearscan.builder.create(config);
 };

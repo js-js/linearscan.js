@@ -2,13 +2,12 @@
 
 var assert = require('assert');
 
-var linearscan = require('../../');
-var builder = linearscan.builder;
+var linearscan = require('../');
 
-describe('Interval Builder/Interval', function() {
+describe('Interval', function() {
   var interval;
   beforeEach(function() {
-    interval = new builder.Interval(null);
+    interval = new linearscan.Interval(null);
   });
 
   describe('ranges', function() {
