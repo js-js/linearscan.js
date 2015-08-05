@@ -7,9 +7,9 @@ var fixtures = require('./fixtures');
 
 function check(b, expected) {
   var out = '';
-  for (var i = 0; i < b.intervals.length; i++) {
-    var interval = b.intervals[i];
-    out += interval.node.index * 3 + '. ' + interval.node.opcode + ' ';
+
+  function renderInterval(prefix, interval) {
+    var out = prefix + ' ';
 
     if (!interval.alive)
       out += '(dead) ';
@@ -27,7 +27,21 @@ function check(b, expected) {
     if (uses)
       out += ' : ' + uses;
 
-    out += '\n';
+    return out;
+  }
+
+  for (var i = 0; i < b.config.registers.length; i++) {
+    var reg = b.config.registers[i];
+    if (reg.ranges.length === 0)
+      continue;
+
+    out += renderInterval('%' + i, reg) + '\n';
+  }
+
+  for (var i = 0; i < b.intervals.length; i++) {
+    var interval = b.intervals[i];
+    var prefix = interval.node.index * 3 + '. ' + interval.node.opcode;
+    out += renderInterval(prefix, interval) + '\n';
   }
 
   assertText.equal(out, fixtures.fn2str(expected));
@@ -166,6 +180,32 @@ describe('Interval Builder', function() {
       18. return (dead) [20;21)
 
       21. return (dead) [23;24)
+    */});
+  });
+
+  it('should process spills', function() {
+    var b = fixtures.createBuilder(fixtures.options, function() {/*
+      pipeline {
+        b0 {
+          i0 = literal "function-name"
+          i1 = literal 0
+          i2 = call i0, i1
+          i3 = return i2
+        }
+      }
+    */});
+
+    b.buildIntervals();
+
+    check(b, function() {/*
+      %0 [10;11)
+      %1 [10;11)
+      %2 [10;11)
+      0. start [3;15)
+      3. literal [5;9) : {5=*}, {9=%*}
+      6. literal [8;9) : {8=*}, {9=*}
+      9. call [11;12) : {11=%0}, {12=%0}
+      12. return (dead) [14;15)
     */});
   });
 });

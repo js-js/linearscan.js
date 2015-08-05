@@ -19,6 +19,15 @@ exports.options = {
     },
     return: {
       inputs: [ { kind: 'register', value: 'rax' } ]
+    },
+    call: {
+      output: { kind: 'register', value: 'rax' },
+      inputs: [ 'register', 'any' ],
+      spills: [
+        { kind: 'register', value: 'rax' },
+        { kind: 'register', value: 'rbx' },
+        { kind: 'register', value: 'rcx' }
+      ]
     }
   }
 };
