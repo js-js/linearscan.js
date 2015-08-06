@@ -1,0 +1,53 @@
+#reindexed, #pipeline {
+  width: 300px;
+  height: 150px;
+  float: left;
+}
+
+#output {
+  margin-left: 16px;
+  float: left;
+}
+
+#output .scale path,
+#output .scale line {
+  fill: none;
+  stroke: #555;
+  shape-rendering: crispEdges;
+}
+
+#output .scale line.minor {
+  stroke: #ccc;
+}
+
+#output .scale .tick text {
+  font-size: 6px;
+  line-height: 8px;
+}
+
+#output .intervals .interval-dead {
+  fill: rgba(0, 0, 0, 0.1);
+}
+
+#output .intervals .use {
+  fill: #6A74EB;
+}
+
+#output .intervals .use-register {
+  fill: #F23F3F;
+}
+
+#output .intervals .use-fixed {
+  fill: #ED4B32;
+}
+
+.text-aligned {
+  padding: 2px 4px;
+  font-family: monospace;
+  line-height: 24px;
+  font-size: 16px;
+}
+
+.clear {
+  clear: both;
+}
