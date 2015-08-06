@@ -11,7 +11,7 @@ function App(options) {
 
   this.config = linearscan.config.create(options.config);
 
-  this.input = new Input(options.input);
+  this.input = new Input(options.input, options.initial);
   this.reindexed = new Input(options.reindexed);
   this.input.on('change', function(text) {
     try {
