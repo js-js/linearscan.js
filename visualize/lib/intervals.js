@@ -65,7 +65,8 @@ Intervals.prototype.update = function update(config) {
   var axis = d3.svg.axis()
       .scale(fakeY)
       .orient('left');
-  var join = this.elem.selectAll('.scale')
+
+  this.elem.selectAll('.scale')
       .attr('transform', 'translate(' + this.axis.width + ', 0)')
       .call(axis)
       .selectAll('.tick line')
@@ -78,12 +79,13 @@ Intervals.prototype.update = function update(config) {
       .attr('x2', intervalsWidth);
 
   // Create intervals
-  var join = this.elem
+  var intervals = this.elem
       .select('.intervals')
       .attr('transform',
             'translate(' + (this.axis.width + this.axis.padding) + ', 0)')
-      .selectAll('g.intervals').data(config.intervals);
-  var intervals = join.enter().append('g');
+      .selectAll('g.interval').data(config.intervals);
+  intervals.exit().remove();
+  intervals.enter().append('g');
 
   intervals
       .attr('class', function(d) {
@@ -97,9 +99,12 @@ Intervals.prototype.update = function update(config) {
   // Create ranges
   var ranges = intervals.selectAll('rect.range').data(function data(d, i) {
     return d.ranges;
-  }).enter().append('rect');
+  });
+  ranges.exit().remove();
+  ranges.enter().append('rect');
 
   ranges
+      .transition()
       .attr('class', 'range')
       .attr('x', 0)
       .attr('y', function(d) {
@@ -111,11 +116,16 @@ Intervals.prototype.update = function update(config) {
       });
 
   // Create uses
-  var uses = intervals.selectAll('rect.uses').data(function data(d, i) {
+  var uses = intervals.selectAll('rect.use').data(function data(d, i) {
     return d.uses;
-  }).enter().append('rect');
+  }, function key(use) {
+    return use.pos;
+  });
+  uses.exit().remove();
+  uses.enter().append('rect');
 
   uses
+      .transition()
       .attr('class', function(d) {
         var out = 'use ';
         if (d.value.kind === 'any') {
