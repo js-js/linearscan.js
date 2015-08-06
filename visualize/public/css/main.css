@@ -1,12 +1,24 @@
-#reindexed, #pipeline {
+textarea {
   width: 300px;
   height: 150px;
+}
+
+#pipeline, .reindexed-wrap {
   float: left;
 }
 
+.reindexed-wrap {
+  position: relative;
+}
+
+#reindexed {
+  opacity: 0.2;
+}
+
 #output {
-  margin-left: 16px;
-  float: left;
+  position: absolute;
+  left: 0px;
+  top: 0px;
 }
 
 #output .scale path,
@@ -24,7 +36,7 @@
 }
 
 #output .scale line.minor {
-  stroke: #ccc;
+  stroke: rgba(0,0,0,0.1);
 }
 
 #output .scale .tick text {

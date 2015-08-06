@@ -6,8 +6,8 @@ function Intervals(selector) {
   this.elem = d3.select(selector);
 
   this.axis = {
-    width: 24,
-    padding: 4,
+    width: 0,
+    padding: 0,
     trail: 8
   };
   this.column = {
@@ -69,7 +69,8 @@ Intervals.prototype.update = function update(config) {
 
   var axis = d3.svg.axis()
       .scale(fakeY)
-      .orient('left');
+      .orient('left')
+      .tickFormat('');
 
   this.elem.selectAll('.scale')
       .attr('transform', 'translate(' + this.axis.width + ', 0)')
