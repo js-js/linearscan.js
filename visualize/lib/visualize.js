@@ -37,6 +37,6 @@ var config = {
 var app = new App({
   input: '#pipeline',
   reindexed: '#reindexed',
-  intervals: '#intervals',
+  intervals: '#output',
   config: config
 });

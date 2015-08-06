@@ -38,7 +38,9 @@ App.prototype.onChange = function onChange(text) {
     return;
   }
 
-  this.reindexed.update(reindexed.replace(/^[^\n]+\n|\n[^\n]+$/g, ''));
+  // Unpad data and remove `pipeline {}` wrap
+  this.reindexed.update(reindexed.replace(/\n  /g, '\n')
+                                 .replace(/^[^\n]+\n|\n[^\n]+$/g, ''));
 
   p = pipeline.create('dominance');
   p.parse(reindexed, { cfg: true, dominance: true }, 'printable');

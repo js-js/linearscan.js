@@ -4,79 +4,134 @@ var d3 = require('d3');
 
 function Intervals(selector) {
   this.elem = d3.select(selector);
+
+  this.axis = {
+    width: 24,
+    padding: 4,
+    trail: 8
+  };
   this.column = {
     width: 8,
     padding: 2,
-    tick: 8
+    tick: 8,
+    use: 4
   };
-
-  this.loc = null;
 }
 module.exports = Intervals;
 
 Intervals.prototype.update = function update(config) {
   var self = this;
 
-  // Fill `loc` array for each node of the input
-  var max = this.fillLoc(config.input);
+  var max = 0;
+  var domain = d3.range(0, config.input.nodes.length * 3 + 1);
+  var lines = domain.map(function(pos) {
+    var node = config.input.nodes[Math.floor(pos / 3)];
+    var loc;
 
-  this.elem.style('width',
-                  config.intervals.length *
-                      (this.column.width + this.column.padding));
-  this.elem.style('height', this.column.tick * max * 3);
+    if (node)
+      loc = node.loc;
+    else
+      loc = { line: max };
+
+    var off = pos % 3;
+    max = Math.max(max, loc.line);
+    if (loc.end)
+      max = Math.max(max, loc.end);
+
+    // We emulate `pipeline {}`
+    var line = loc.line - 1;
+    return (line * 3 + off) * this.column.tick;
+  }, this);
+
+  var intervalsWidth = config.intervals.length *
+                           (this.column.width + this.column.padding) +
+                       this.axis.trail;
+  this.elem.attr('width',
+                 this.axis.width + this.axis.padding + intervalsWidth);
+  this.elem.attr('height', this.column.tick * 3 * max);
+
+  // Create scale
+  var scaleY = d3.scale.ordinal()
+      .domain(domain)
+      .range(lines);
+
+  var fakeDomain = d3.range(0, max * 3);
+  var fakeY = d3.scale.ordinal()
+      .domain(fakeDomain)
+      .range(fakeDomain.map(function(pos) {
+        return pos * this.column.tick;
+      }, this));
+
+  var axis = d3.svg.axis()
+      .scale(fakeY)
+      .orient('left');
+  var join = this.elem.selectAll('.scale')
+      .attr('transform', 'translate(' + this.axis.width + ', 0)')
+      .call(axis)
+      .selectAll('.tick line')
+      .attr('class', function(d) {
+        if (d % 3 === 0)
+          return 'major';
+        else
+          return 'minor';
+      })
+      .attr('x2', intervalsWidth);
 
   // Create intervals
-  var join = this.elem.selectAll('g').data(config.intervals);
-
+  var join = this.elem
+      .select('.intervals')
+      .attr('transform',
+            'translate(' + (this.axis.width + this.axis.padding) + ', 0)')
+      .selectAll('g.intervals').data(config.intervals);
   var intervals = join.enter().append('g');
 
+  intervals
+      .attr('class', function(d) {
+        return 'interval ' + (d.alive ? 'interval-alive' : 'interval-dead');
+      })
+      .attr('transform', function (d, i) {
+        var x = i * (self.column.width + self.column.padding);
+        return 'translate(' + x + ', 0)';
+      });
+
   // Create ranges
-  var ranges = intervals.selectAll('rect').data(function data(d, i) {
-    return d.ranges.map(function(range) {
-      return {
-        interval: d,
-        index: i,
-        range: range
-      };
-    });
-  }, function key(d) {
-    return d.index + '/' + d.range.start;
+  var ranges = intervals.selectAll('rect.range').data(function data(d, i) {
+    return d.ranges;
   }).enter().append('rect');
 
   ranges
-      .style('x', function (d) {
-        return d.index * (self.column.width + self.column.padding);
+      .attr('class', 'range')
+      .attr('x', 0)
+      .attr('y', function(d) {
+        return scaleY(d.start);
       })
-      .style('y', function(d) {
-        return self.getY(d.range.start);
-      })
-      .style('width', self.column.width)
-      .style('height', function(d) {
-        return self.getY(d.range.end) - self.getY(d.range.start);
+      .attr('width', this.column.width)
+      .attr('height', function(d) {
+        return scaleY(d.end) - scaleY(d.start);
       });
-};
 
-Intervals.prototype.fillLoc = function fillLoc(input) {
-  var loc = new Array(input.nodes.length + 1);
-  var max = 0;
-  for (var i = 0; i < input.nodes.length; i++) {
-    var node = input.nodes[i];
-    loc[i] = node.loc;
-    max = Math.max(node.loc.line, max);
-    if (node.loc.end)
-      max = Math.max(node.loc.end, max);
-  }
-  loc[i] = { line: max };
-  this.loc = loc;
+  // Create uses
+  var uses = intervals.selectAll('rect.uses').data(function data(d, i) {
+    return d.uses;
+  }).enter().append('rect');
 
-  return max;
-};
-
-Intervals.prototype.getY = function getY(pos) {
-  var loc = this.loc[Math.floor(pos / 3)];
-  var off = pos % 3;
-
-  // We emulate `pipeline {`
-  var line = loc.line - 1;
-  return (line * 3 + off) * this.column.tick;
+  uses
+      .attr('class', function(d) {
+        var out = 'use ';
+        if (d.value.kind === 'any') {
+          out += 'use-any';
+        } else if (d.value.kind === 'register') {
+          if (d.value.value !== null)
+            out += 'use-fixed';
+          else
+            out += 'use-register';
+        }
+        return out;
+      })
+      .attr('x', 0)
+      .attr('y', function(d) {
+        return scaleY(d.pos);
+      })
+      .attr('width', this.column.width)
+      .attr('height', this.column.use);
 };

@@ -78,10 +78,10 @@ describe('Interval Builder', function() {
     b.buildIntervals();
 
     check(b, function() {/*
-      0. start [12;18)
-      3. region [18;21)
-      6. region [21;24)
-      9. region [24;33)
+      0. start (dead) [12;18)
+      3. region (dead) [18;21)
+      6. region (dead) [21;24)
+      9. region (dead) [24;33)
 
       12. literal [14;27) : {14=*}, {27=*}
       15. if (dead) [17;18)
@@ -127,10 +127,10 @@ describe('Interval Builder', function() {
     b.buildIntervals();
 
     check(b, function() {/*
-      0. start [12;18)
-      3. region [18;24)
-      6. region [24;33)
-      9. region [33;36)
+      0. start (dead) [12;18)
+      3. region (dead) [18;24)
+      6. region (dead) [24;33)
+      9. region (dead) [33;36)
 
       12. literal [14;18) : {14=*}, {18=*}
       15. jump (dead) [17;18)
@@ -170,9 +170,9 @@ describe('Interval Builder', function() {
     b.buildIntervals();
 
     check(b, function() {/*
-      0. start [9;15)
-      3. region [15;21)
-      6. region [21;27)
+      0. start (dead) [9;15)
+      3. region (dead) [15;21)
+      6. region (dead) [21;27)
 
       9. literal [11;15), [21;24) : {11=*}, {21=*}, {21=*}, {24=%0}
       12. jump (dead) [14;15)
@@ -203,7 +203,9 @@ describe('Interval Builder', function() {
       %0 [10;11)
       %1 [10;11)
       %2 [10;11)
-      0. start [3;15)
+
+      0. start (dead) [3;15)
+
       3. literal [5;9) : {5=*}, {9=%*}
       6. literal [8;9) : {8=*}, {9=*}
       9. call [11;12) : {11=%0}, {12=%0}
@@ -225,7 +227,8 @@ describe('Interval Builder', function() {
     b.buildIntervals();
 
     check(b, function() {/*
-      0. start [3;12)
+      0. start (dead) [3;12)
+
       3. literal [5;9) : {5=*}, {6=*}, {6=*}, {9=%0}
       6. add [8;9) : {8=*}
       9. return (dead) [11;12)
