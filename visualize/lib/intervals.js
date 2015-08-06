@@ -43,6 +43,11 @@ Intervals.prototype.update = function update(config) {
     return (line * 3 + off) * this.column.tick;
   }, this);
 
+  var blocks = new Array(max);
+  config.input.blocks.forEach(function(block) {
+    blocks[block.loc.line * 3] = true;
+  });
+
   var intervalsWidth = config.intervals.length *
                            (this.column.width + this.column.padding) +
                        this.axis.trail;
@@ -71,10 +76,14 @@ Intervals.prototype.update = function update(config) {
       .call(axis)
       .selectAll('.tick line')
       .attr('class', function(d) {
-        if (d % 3 === 0)
-          return 'major';
-        else
+        if (d % 3 === 0) {
+          if (blocks[d])
+            return 'block';
+          else
+            return 'major';
+        } else {
           return 'minor';
+        }
       })
       .attr('x2', intervalsWidth);
 
