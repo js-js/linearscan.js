@@ -16,6 +16,13 @@
   shape-rendering: crispEdges;
 }
 
+#output .scale line.block {
+  stroke: #3B4BFF;
+  stroke-width: 1.5px;
+  stroke-dasharray: 8,2;
+  stroke-dashoffset: 6;
+}
+
 #output .scale line.minor {
   stroke: #ccc;
 }
