@@ -74,6 +74,12 @@ describe('Interval', function() {
       assert.equal(interval.end(), 3);
     });
 
+    it('should not add empty range', function() {
+      interval.addRange(10, 10);
+
+      assert.equal(interval.ranges.length, 0);
+    });
+
     describe('fillRange', function() {
       it('should fill empty interval', function() {
         interval.fillRange(0, 10);
@@ -146,6 +152,20 @@ describe('Interval', function() {
         assert.equal(interval.ranges.length, 1);
         assert.equal(interval.start(), 0);
         assert.equal(interval.end(), 12);
+      });
+
+      it('should not shorten the range', function() {
+        interval.fillRange(0, 10);
+        interval.fillRange(0, 6);
+
+        assert.equal(interval.start(), 0);
+        assert.equal(interval.end(), 10);
+      });
+
+      it('should not fill empty range', function() {
+        interval.fillRange(10, 10);
+
+        assert.equal(interval.ranges.length, 0);
       });
     });
   });

@@ -135,7 +135,7 @@ describe('Interval Builder', function() {
       12. literal [14;18) : {14=*}, {18=*}
       15. jump (dead) [17;18)
 
-      18. ssa:phi [18;27), [33;33) : {20=*}, {27=*}, {33=%0}
+      18. ssa:phi [18;27) : {20=*}, {27=*}, {33=%0}
       21. if (dead) [23;24)
 
       24. literal [26;27) : {26=*}, {27=*}
@@ -161,7 +161,8 @@ describe('Interval Builder', function() {
         }
 
         b2 {
-         i4 = return i0
+          i4 = add i0, i0
+          i5 = return i0
         }
       }
     */});
@@ -171,15 +172,16 @@ describe('Interval Builder', function() {
     check(b, function() {/*
       0. start [9;15)
       3. region [15;21)
-      6. region [21;24)
+      6. region [21;27)
 
-      9. literal [11;15), [21;21) : {11=*}, {21=%0}
+      9. literal [11;15), [21;24) : {11=*}, {21=*}, {21=*}, {24=%0}
       12. jump (dead) [14;15)
 
       15. literal [17;18) : {17=*}, {18=%0}
       18. return (dead) [20;21)
 
-      21. return (dead) [23;24)
+      21. add [23;24) : {23=*}
+      24. return (dead) [26;27)
     */});
   });
 
@@ -206,6 +208,27 @@ describe('Interval Builder', function() {
       6. literal [8;9) : {8=*}, {9=*}
       9. call [11;12) : {11=%0}, {12=%0}
       12. return (dead) [14;15)
+    */});
+  });
+
+  it('should produce correct single block intervals', function() {
+    var b = fixtures.createBuilder(fixtures.options, function() {/*
+      pipeline {
+        b0 {
+          i0 = literal 1
+          i1 = add i0, i0
+          i2 = return i0
+        }
+      }
+    */});
+
+    b.buildIntervals();
+
+    check(b, function() {/*
+      0. start [3;12)
+      3. literal [5;9) : {5=*}, {6=*}, {6=*}, {9=%0}
+      6. add [8;9) : {8=*}
+      9. return (dead) [11;12)
     */});
   });
 });

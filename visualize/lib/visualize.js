@@ -1,8 +1,10 @@
-var linearscan = require('../');
-var pipeline = require('json-pipeline');
+'use strict';
 
-exports.options = {
+var App = require('./app');
+
+var config = {
   registers: [ 'rax', 'rbx', 'rcx', 'rdx' ],
+
   opcodes: {
     literal: {
       output: 'any'
@@ -32,19 +34,9 @@ exports.options = {
   }
 };
 
-exports.fn2str = function fn2str(fn) {
-  return fn.toString().replace(/^function[^{]+{\/\*|\*\/}$/g, '');
-};
-
-exports.createBuilder = function createBuilder(options, source) {
-  var p = pipeline.create('dominance');
-
-  p.parse(exports.fn2str(source), {
-    cfg: true
-  }, 'printable');
-
-  p.reindex();
-
-  var config = linearscan.config.create(options);
-  return linearscan.builder.create(p, config);
-};
+var app = new App({
+  input: '#pipeline',
+  reindexed: '#reindexed',
+  intervals: '#intervals',
+  config: config
+});
