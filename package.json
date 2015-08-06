@@ -29,6 +29,7 @@
     "mocha": "^2.2.5"
   },
   "dependencies": {
+    "binary-search": "^1.2.0",
     "bit-set.js": "^1.0.1",
     "bitfield.js": "^1.2.0"
   }
