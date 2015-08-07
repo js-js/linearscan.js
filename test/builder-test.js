@@ -40,7 +40,7 @@ function check(b, expected) {
 
   for (var i = 0; i < b.intervals.length; i++) {
     var interval = b.intervals[i];
-    var prefix = interval.node.index + '. ' + interval.node.opcode;
+    var prefix = interval.start() + '. ' + interval.node.opcode;
     out += renderInterval(prefix, interval) + '\n';
   }
 

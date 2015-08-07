@@ -5,8 +5,6 @@ var d3 = require('d3');
 function Intervals(selector) {
   this.elem = d3.select(selector);
 
-  this.multiplier = 1;
-
   this.axis = {
     width: 0,
     padding: 0,
@@ -21,7 +19,7 @@ function Intervals(selector) {
     use: 4
   };
 
-  this.column.tick = this.column.height / this.multiplier;
+  this.column.tick = this.column.height;
 }
 module.exports = Intervals;
 
@@ -129,37 +127,34 @@ Intervals.prototype.update = function update(config) {
 Intervals.prototype.createAxis = function createAxis(config, groups) {
   var self = this;
 
+  var lines = new Array(config.input.blocks.length);
   var max = 0;
-  var domain = d3.range(0, config.input.nodes.length * this.multiplier + 1);
-  var lines = domain.map(function(pos) {
-    var node = config.input.nodes[Math.floor(pos / this.multiplier)];
-    var loc;
+  for (var i = 0, off = lines.length; i < config.input.blocks.length; i++) {
+    var block = config.input.blocks[i];
+    max = Math.max(max, block.loc.end);
 
-    if (node)
-      loc = node.loc;
-    else
-      loc = { line: max };
-
-    var off = pos % this.multiplier;
-    max = Math.max(max, loc.line);
-    if (loc.end)
-      max = Math.max(max, loc.end);
-
-    // We emulate `pipeline {}`
-    var line = loc.line - 1;
-    return (line * this.multiplier + off) * this.column.tick;
-  }, this);
+    lines[i] = block.loc.line;
+    lines[off++] = block.loc.line;
+    for (var j = 0; j < block.nodes.length; j++) {
+      var node = block.nodes[j];
+      lines[off++] = node.loc.line;
+    }
+    lines[off++] = block.loc.end;
+  }
+  var domain = d3.range(0, off);
 
   var blocks = new Array(max);
   config.input.blocks.forEach(function(block) {
-    blocks[block.loc.line * this.multiplier] = true;
+    blocks[block.loc.line - 1] = true;
   }, this);
 
   var scaleY = d3.scale.ordinal()
       .domain(domain)
-      .range(lines);
+      .range(lines.map(function(line) {
+        return (line - 1) * this.column.tick;
+      }, this));
 
-  var fakeDomain = d3.range(0, max * this.multiplier);
+  var fakeDomain = d3.range(0, max);
   var fakeY = d3.scale.ordinal()
       .domain(fakeDomain)
       .range(fakeDomain.map(function(pos) {
@@ -181,20 +176,16 @@ Intervals.prototype.createAxis = function createAxis(config, groups) {
       .call(axis)
       .selectAll('.tick line')
       .attr('class', function(d) {
-        if (d % self.multiplier === 0) {
-          if (blocks[d])
-            return 'block';
-          else
-            return 'major';
-        } else {
-          return 'minor';
-        }
+        if (blocks[d])
+          return 'block';
+        else
+          return 'major';
       })
       .attr('x2', intervalsWidth);
 
   this.elem.attr('width',
                  this.axis.width + this.axis.padding + intervalsWidth);
-  this.elem.attr('height', this.column.tick * this.multiplier * max);
+  this.elem.attr('height', this.column.tick * max);
 
   return scaleY;
 };

@@ -69,7 +69,7 @@ textarea {
 }
 
 #output .intervals .interval-dead {
-  fill: rgba(0, 0, 0, 0.1);
+  opacity: 0.1;
 }
 
 #output .intervals .use {
