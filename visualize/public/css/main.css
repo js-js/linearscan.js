@@ -60,6 +60,10 @@ textarea {
   fill: #3BFFC4;
 }
 
+#output .intervals .interval-spill {
+  fill: #EBE72A;
+}
+
 #output .intervals .interval-dead {
   fill: rgba(0, 0, 0, 0.1);
 }
