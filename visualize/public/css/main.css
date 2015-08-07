@@ -44,6 +44,10 @@ textarea {
   line-height: 8px;
 }
 
+#output .intervals .interval {
+  opacity: 0.6;
+}
+
 #output .intervals .interval-reg-0 {
   fill: #FF3B7F;
 }
