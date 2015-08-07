@@ -173,9 +173,9 @@ describe('Interval', function() {
 
   describe('uses', function() {
     it('should add use', function() {
-      interval.use(3, null);
-      interval.use(1, null);
-      var use = interval.use(2, null);
+      interval.use(3, new Operand('any'));
+      interval.use(1, new Operand('any'));
+      var use = interval.use(2, new Operand('any'));
       assert.equal(use.pos, 2);
 
       assert.equal(interval.uses[0].pos, 1);
@@ -184,9 +184,9 @@ describe('Interval', function() {
     });
 
     it('should support firstUseAfter', function() {
-      interval.use(3, null);
-      interval.use(1, null);
-      interval.use(2, null);
+      interval.use(3, new Operand('any'));
+      interval.use(1, new Operand('any'));
+      interval.use(2, new Operand('any'));
 
       var use = interval.firstUseAfter(1);
       assert.equal(use.pos, 1);
@@ -217,6 +217,99 @@ describe('Interval', function() {
 
       var use = interval.firstUseAfter(4, 'register');
       assert(use === null);
+    });
+  });
+
+  describe('splitting', function() {
+    it('should create proper tree', function() {
+      interval.addRange(0, 40);
+
+      var a = interval.split(10);
+      var b = a.split(20);
+      var c = b.split(30);
+
+      assert(a.parent === interval);
+      assert(b.parent === interval);
+      assert(c.parent === interval);
+
+      assert.equal(interval.start(), 0);
+      assert.equal(interval.end(), 10);
+      assert.equal(a.start(), 10);
+      assert.equal(a.end(), 20);
+      assert.equal(b.start(), 20);
+      assert.equal(b.end(), 30);
+      assert.equal(c.start(), 30);
+      assert.equal(c.end(), 40);
+    });
+
+    describe('ranges', function() {
+      it('should split not covered ranges', function() {
+        interval.addRange(0, 1);
+        interval.addRange(2, 3);
+
+        var child = interval.split(1);
+        assert.equal(interval.start(), 0);
+        assert.equal(interval.end(), 1);
+
+        assert.equal(child.start(), 2);
+        assert.equal(child.end(), 3);
+      });
+
+      it('should split covered ranges', function() {
+        interval.addRange(0, 1);
+        interval.addRange(2, 10);
+        interval.addRange(12, 13);
+
+        var child = interval.split(5);
+        assert.equal(interval.start(), 0);
+        assert.equal(interval.end(), 5);
+
+        assert(interval.covers(0));
+        assert(!interval.covers(1));
+        assert(interval.covers(2));
+        assert(!interval.covers(5));
+
+        assert.equal(child.start(), 5);
+        assert.equal(child.end(), 13);
+
+        assert(child.covers(5));
+        assert(child.covers(9));
+        assert(!child.covers(10));
+        assert(child.covers(12));
+        assert(!child.covers(13));
+      });
+    });
+
+    describe('uses', function() {
+      it('should split uses without match', function() {
+        interval.use(1, new Operand('any'));
+        interval.use(3, new Operand('any'));
+        interval.use(5, new Operand('any'));
+
+        var child = interval.split(2);
+
+        assert.equal(interval.uses.length, 1);
+        assert.equal(interval.uses[0].pos, 1);
+
+        assert.equal(child.uses.length, 2);
+        assert.equal(child.uses[0].pos, 3);
+        assert.equal(child.uses[1].pos, 5);
+      });
+
+      it('should split uses with match', function() {
+        interval.use(1, new Operand('any'));
+        interval.use(2, new Operand('any'));
+        interval.use(3, new Operand('any'));
+
+        var child = interval.split(2);
+
+        assert.equal(interval.uses.length, 1);
+        assert.equal(interval.uses[0].pos, 1);
+
+        assert.equal(child.uses.length, 2);
+        assert.equal(child.uses[0].pos, 2);
+        assert.equal(child.uses[1].pos, 3);
+      });
     });
   });
 });
