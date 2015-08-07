@@ -3,12 +3,13 @@
 var assert = require('assert');
 
 var linearscan = require('../');
+var Interval = linearscan.Interval;
 var Operand = linearscan.Operand;
 
 describe('Interval', function() {
   var interval;
   beforeEach(function() {
-    interval = new linearscan.Interval(null);
+    interval = new Interval(null);
   });
 
   describe('ranges', function() {
@@ -326,6 +327,60 @@ describe('Interval', function() {
         assert.equal(child.uses[0].pos, 2);
         assert.equal(child.uses[1].pos, 3);
       });
+    });
+  });
+
+  describe('intersect', function() {
+    it('should return false', function() {
+      interval.addRange(0, 10);
+      interval.addRange(20, 30);
+      interval.addRange(40, 50);
+
+      var other = new Interval(null);
+      other.addRange(10, 20);
+      other.addRange(30, 40);
+      other.addRange(50, 60);
+
+      assert(interval.intersect(other) === false);
+      assert(other.intersect(interval) === false);
+    });
+
+    it('should return position in case of our closest', function() {
+      interval.addRange(0, 10);
+      interval.addRange(20, 30);
+      interval.addRange(40, 50);
+
+      var other = new Interval(null);
+      other.addRange(10, 20);
+      other.addRange(30, 40);
+      other.addRange(45, 60);
+
+      assert.equal(interval.intersect(other), 45);
+      assert.equal(other.intersect(interval), 45);
+    });
+
+    it('should return position in case of their closest', function() {
+      interval.addRange(0, 10);
+      interval.addRange(20, 30);
+      interval.addRange(40, 50);
+
+      var other = new Interval(null);
+      other.addRange(10, 20);
+      other.addRange(30, 45);
+      other.addRange(50, 60);
+
+      assert.equal(interval.intersect(other), 40);
+      assert.equal(other.intersect(interval), 40);
+    });
+
+    it('should return position in case of start coverage', function() {
+      interval.addRange(20, 30);
+
+      var other = new Interval(null);
+      other.addRange(10, 40);
+
+      assert.equal(interval.intersect(other), 20);
+      assert.equal(other.intersect(interval), 20);
     });
   });
 });
