@@ -1,6 +1,7 @@
 'use strict';
 
 var linearscan = require('../../');
+var d3 = require('d3');
 var pipeline = require('json-pipeline');
 
 var Input = require('./input');
@@ -13,8 +14,17 @@ function App(options) {
 
   this.input = new Input(options.input, options.initial);
   this.reindexed = new Input(options.reindexed);
+
+  this.allocate = false;
+  d3.select(options.allocate).on('change', function() {
+    self.allocate = this.checked;
+    self.input.emit('change', self.lastText);
+  });
+
+  this.lastText = null;
   this.input.on('change', function(text) {
     try {
+      self.lastText = text;
       self.onChange(text);
     } catch (e) {
       console.error(e);
@@ -49,6 +59,12 @@ App.prototype.onChange = function onChange(text) {
   var builder = linearscan.builder.create(p, this.config);
 
   builder.buildIntervals();
+
+  if (this.allocate) {
+    var allocator = linearscan.allocator.create(this.config);
+
+    allocator.allocate();
+  }
 
   this.render();
 };

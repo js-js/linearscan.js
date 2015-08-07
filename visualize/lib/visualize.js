@@ -39,6 +39,7 @@ var app = new App({
   input: '#pipeline',
   reindexed: '#reindexed',
   intervals: '#output',
+  allocate: '#allocate',
   config: config,
   initial: 'b0 {\n' +
            '  i0 = literal 0\n' +
