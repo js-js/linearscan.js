@@ -3,6 +3,7 @@
 var assert = require('assert');
 
 var linearscan = require('../');
+var Operand = linearscan.Operand;
 
 describe('Interval', function() {
   var interval;
@@ -188,13 +189,34 @@ describe('Interval', function() {
       interval.use(2, null);
 
       var use = interval.firstUseAfter(1);
-      assert.equal(use.pos, 2);
+      assert.equal(use.pos, 1);
 
       var use = interval.firstUseAfter(3);
-      assert(use === null);
+      assert.equal(use.pos, 3);
 
       var use = interval.firstUseAfter(-1);
       assert.equal(use.pos, 1);
+
+      var use = interval.firstUseAfter(4);
+      assert(use === null);
+    });
+
+    it('should support filtered firstUseAfter', function() {
+      interval.use(1, new Operand('any'));
+      interval.use(2, new Operand('register'));
+      interval.use(3, new Operand('any'));
+
+      var use = interval.firstUseAfter(1, 'register');
+      assert.equal(use.pos, 2);
+
+      var use = interval.firstUseAfter(3, 'register');
+      assert(use === null);
+
+      var use = interval.firstUseAfter(-1, 'register');
+      assert.equal(use.pos, 2);
+
+      var use = interval.firstUseAfter(4, 'register');
+      assert(use === null);
     });
   });
 });
