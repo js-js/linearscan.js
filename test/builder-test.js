@@ -20,7 +20,7 @@ function check(b, expected) {
 
     out += ranges;
 
-    var uses = interval.uses.map(function(use) {
+    var uses = interval.uses.concat(interval.fixedUses).map(function(use) {
       return use.inspect();
     }).join(', ');
 
@@ -78,14 +78,20 @@ describe('Interval Builder', function() {
     b.buildIntervals();
 
     check(b, function() {/*
+      %0 [10;11)
+
       0. start (dead) [4;6)
       1. region (dead) [6;7)
       2. region (dead) [7;8)
       3. region (dead) [8;11)
+
       4. literal [4;9) : {4=*}, {9=*}
       5. if (dead) [5;6)
+
       6. literal [6;7) : {6=*}, {8=*}
+
       7. literal [7;8) : {7=*}, {8=*}
+
       8. ssa:phi [8;9) : {8=*}, {9=*}
       9. add [9;10) : {9=*}, {10=%0}
       10. return (dead) [10;11)
@@ -123,19 +129,21 @@ describe('Interval Builder', function() {
     b.buildIntervals();
 
     check(b, function() {/*
+      %0 [11;12)
+
       0. start (dead) [4;6)
       1. region (dead) [6;8)
       2. region (dead) [8;11)
       3. region (dead) [11;12)
 
-      4. literal [4;6) : {4=*}, {6=*}
+      4. literal [4;6) : {4=*}, {6=*}, {11=*}
       5. jump (dead) [5;6)
 
       6. ssa:phi [6;9) : {6=*}, {9=*}, {11=%0}
       7. if (dead) [7;8)
 
       8. literal [8;9) : {8=*}, {9=*}
-      9. add [9;11) : {6=*}, {9=*}
+      9. add [9;11) : {6=*}, {9=*}, {11=*}
       10. jump (dead) [10;11)
 
       11. return (dead) [11;12)
@@ -166,6 +174,8 @@ describe('Interval Builder', function() {
     b.buildIntervals();
 
     check(b, function() {/*
+      %0 [6;7), [8;9)
+
       0. start (dead) [3;5)
       1. region (dead) [5;7)
       2. region (dead) [7;9)
@@ -196,7 +206,7 @@ describe('Interval Builder', function() {
     b.buildIntervals();
 
     check(b, function() {/*
-      %0 [3;4)
+      %0 [3;5)
       %1 [3;4)
       %2 [3;4)
 
@@ -223,6 +233,7 @@ describe('Interval Builder', function() {
     b.buildIntervals();
 
     check(b, function() {/*
+      %0 [3;4)
       0. start (dead) [1;4)
       1. literal [1;3) : {1=*}, {2=*}, {2=*}, {3=%0}
       2. add [2;3) : {2=*}

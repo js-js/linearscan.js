@@ -242,6 +242,22 @@ describe('Interval', function() {
       assert.equal(c.end(), 40);
     });
 
+    it('should remove interval from tree', function() {
+      interval.addRange(0, 30);
+
+      var a = interval.split(10);
+      var b = a.split(20);
+
+      a.remove();
+
+      assert.equal(interval.children.length, 1);
+      assert(interval.covers(0));
+      assert(!interval.covers(10));
+      assert(!b.covers(10));
+      assert(b.covers(20));
+      assert(!b.covers(30));
+    });
+
     describe('ranges', function() {
       it('should split not covered ranges', function() {
         interval.addRange(0, 1);

@@ -44,6 +44,22 @@ textarea {
   line-height: 8px;
 }
 
+#output .intervals .interval-reg-0 {
+  fill: #FF3B7F;
+}
+
+#output .intervals .interval-reg-1 {
+  fill: #A03BFF;
+}
+
+#output .intervals .interval-reg-2 {
+  fill: #3BB0FF;
+}
+
+#output .intervals .interval-reg-3 {
+  fill: #3BFFC4;
+}
+
 #output .intervals .interval-dead {
   fill: rgba(0, 0, 0, 0.1);
 }

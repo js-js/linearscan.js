@@ -106,7 +106,17 @@ Intervals.prototype.update = function update(config) {
 
   intervals
       .attr('class', function(d) {
-        return 'interval ' + (d.alive ? 'interval-alive' : 'interval-dead');
+        var out = 'interval';
+        out += ' ' + (d.alive ? 'interval-alive' : 'interval-dead');
+        if (d.value === null)
+          return out;
+
+        if (d.value.kind === 'register')
+          out += ' interval-reg-' + d.value.value;
+        else if (d.value.kind === 'spill')
+          out += ' interval-spill';
+
+        return out;
       })
       .attr('transform', function (d, i) {
         var x = i * (self.column.width + self.column.padding);
