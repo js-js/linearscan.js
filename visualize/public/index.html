@@ -8,10 +8,6 @@
   </head>
   <body>
     <textarea id="pipeline" class="text-aligned"></textarea>
-    <label>
-      <input type="checkbox" id="allocate"/>
-      Allocate registers
-    </label>
 
     <div class="reindexed-wrap">
       <textarea id="reindexed" class="text-aligned" readonly></textarea>
@@ -20,7 +16,13 @@
         <g class="intervals"></g>
       </svg>
     </div>
-    <span class="clear"></span>
+    <div class="clear"></div>
+    <section>
+      <label>
+        <input type="checkbox" id="allocate"/>
+        Allocate registers
+      </label>
+    </section>
 
     <script src="js/bundle.js"></script>
   </body>
