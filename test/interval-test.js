@@ -399,4 +399,24 @@ describe('Interval', function() {
       assert(interval.childAt(70) === null);
     });
   });
+
+  describe('nextChild', function() {
+    it('should return first child if called on root', function() {
+      interval.addRange(0, 60);
+
+      var a = interval.split(20);
+
+      assert(interval.nextChild() === a);
+    });
+
+    it('should return next child if called on child', function() {
+      interval.addRange(0, 60);
+
+      var a = interval.split(20);
+      var b = a.split(40);
+
+      assert(a.nextChild() === b);
+      assert(b.nextChild() === null);
+    });
+  });
 });
