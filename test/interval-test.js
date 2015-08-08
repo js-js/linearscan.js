@@ -383,4 +383,20 @@ describe('Interval', function() {
       assert.equal(other.intersect(interval), 20);
     });
   });
+
+  describe('childAt', function() {
+    it('should return child that covers interval', function() {
+      interval.addRange(0, 60);
+
+      var a = interval.split(20);
+      var b = a.split(40);
+
+      assert(interval.childAt(-10) === null);
+      assert(interval.childAt(10) === interval);
+      assert(interval.childAt(30) === a);
+      assert(interval.childAt(45) === b);
+      assert(interval.childAt(60) === b);
+      assert(interval.childAt(70) === null);
+    });
+  });
 });

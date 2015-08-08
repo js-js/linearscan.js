@@ -1,7 +1,7 @@
 'use strict';
 
 var fixtures = require('./fixtures');
-var check = fixtures.check;
+var check = fixtures.checkBuilder;
 
 describe('Interval Builder', function() {
   it('should work on branch', function() {
@@ -33,7 +33,7 @@ describe('Interval Builder', function() {
 
     b.buildIntervals();
 
-    check(b.config, function() {/*
+    check(b, function() {/*
       %0 [18;19)
 
       0. start (dead) [0;6)
@@ -84,7 +84,7 @@ describe('Interval Builder', function() {
 
     b.buildIntervals();
 
-    check(b.config, function() {/*
+    check(b, function() {/*
       %0 [20;21)
 
       0. start (dead) [0;6)
@@ -129,7 +129,7 @@ describe('Interval Builder', function() {
 
     b.buildIntervals();
 
-    check(b.config, function() {/*
+    check(b, function() {/*
       %0 [8;9), [14;15)
 
       0. start (dead) [0;6)
@@ -161,7 +161,7 @@ describe('Interval Builder', function() {
 
     b.buildIntervals();
 
-    check(b.config, function() {/*
+    check(b, function() {/*
       %0 [5;7)
       %1 [5;6)
       %2 [5;6)
@@ -188,7 +188,7 @@ describe('Interval Builder', function() {
 
     b.buildIntervals();
 
-    check(b.config, function() {/*
+    check(b, function() {/*
       %0 [4;5)
 
       0. start (dead) [0;8)

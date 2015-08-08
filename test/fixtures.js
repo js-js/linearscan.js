@@ -1,6 +1,7 @@
 var linearscan = require('../');
 var pipeline = require('json-pipeline');
 
+var assert = require('assert');
 var assertText = require('assert-text');
 assertText.options.trim = true;
 
@@ -52,7 +53,26 @@ exports.createBuilder = function createBuilder(options, source) {
   return linearscan.builder.create(p, config);
 };
 
-exports.check = function check(config, expected) {
+
+exports.createAllocator = function createAllocator(options, source) {
+  var p = pipeline.create('dominance');
+
+  p.parse(exports.fn2str(source), {
+    cfg: true
+  }, 'printable');
+
+  p.reindex();
+
+  var config = linearscan.config.create(options);
+  var builder = linearscan.builder.create(p, config);
+
+  builder.buildIntervals();
+
+  return linearscan.allocator.create(config);
+};
+
+exports.checkBuilder = function checkBuilder(builder, expected) {
+  var config = builder.config;
   var out = '';
 
   function renderInterval(prefix, interval, isReg) {
@@ -95,4 +115,38 @@ exports.check = function check(config, expected) {
   }
 
   assertText.equal(out, exports.fn2str(expected));
-}
+};
+
+exports.checkAllocator = function checkAllocator(allocator, expected) {
+  var out = '';
+  var config = allocator.config;
+
+  function interval(node, at) {
+    var child = config.intervals[node.index].childAt(
+        config.positions[at.index]);
+
+    if (child.value === null) {
+      assert(!child.alive);
+      return '(none)';
+    }
+    return child.value.inspect();
+  }
+
+  for (var i = 0; i < config.input.nodes.length; i++) {
+    var node = config.input.nodes[i];
+
+    if (node.opcode === 'start' ||
+        node.opcode === 'region' ||
+        node.opcode === 'if' ||
+        node.opcode === 'jump') {
+      continue;
+    }
+
+    out += interval(node, node) + ' = ' + node.opcode;
+    for (var j = 0; j < node.inputs.length; j++)
+      out += ' ' + interval(node.inputs[j], node);
+    out += '\n';
+  }
+
+  assertText.equal(out, exports.fn2str(expected));
+};
