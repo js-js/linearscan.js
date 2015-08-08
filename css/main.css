@@ -1,12 +1,28 @@
-#reindexed, #pipeline {
+textarea {
   width: 300px;
   height: 150px;
+}
+
+#pipeline, .reindexed-wrap {
   float: left;
 }
 
+.reindexed-wrap {
+  position: relative;
+}
+
+#reindexed {
+  opacity: 0.2;
+}
+
+#reindexed .source-line {
+  height: 24px;
+}
+
 #output {
-  margin-left: 16px;
-  float: left;
+  position: absolute;
+  left: 0px;
+  top: 0px;
 }
 
 #output .scale path,
@@ -24,7 +40,7 @@
 }
 
 #output .scale line.minor {
-  stroke: #ccc;
+  stroke: rgba(0,0,0,0.1);
 }
 
 #output .scale .tick text {
@@ -32,8 +48,37 @@
   line-height: 8px;
 }
 
+#output .intervals .group-fixed {
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+
+#output .intervals .interval {
+  opacity: 0.6;
+}
+
+#output .intervals .interval-reg-0 {
+  fill: #FF3B7F;
+}
+
+#output .intervals .interval-reg-1 {
+  fill: #A03BFF;
+}
+
+#output .intervals .interval-reg-2 {
+  fill: #3BB0FF;
+}
+
+#output .intervals .interval-reg-3 {
+  fill: #3BFFC4;
+}
+
+#output .intervals .interval-spill {
+  fill: #EBE72A;
+}
+
 #output .intervals .interval-dead {
-  fill: rgba(0, 0, 0, 0.1);
+  opacity: 0.1;
 }
 
 #output .intervals .use {
