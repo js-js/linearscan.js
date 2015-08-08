@@ -19,7 +19,8 @@ function Intervals(selector) {
     use: 4
   };
 
-  this.column.tick = this.column.height;
+  this.multiplier = 2;
+  this.column.tick = this.column.height / this.multiplier;
 }
 module.exports = Intervals;
 
@@ -39,8 +40,10 @@ Intervals.prototype.update = function update(config) {
   groups.enter().append('g');
 
   groups
+      .attr('class', function d(group, i) {
+        return i < config.intervals.length ? 'group' : 'group group-fixed';
+      })
       .transition()
-      .attr('class', 'group')
       .attr('transform', function(d, i) {
         var offset = d.offset * (self.column.width + self.column.padding);
         offset += i * self.column.groupPadding;
@@ -55,7 +58,6 @@ Intervals.prototype.update = function update(config) {
   intervals.enter().append('g');
 
   intervals
-      .transition()
       .attr('class', function(d) {
         var out = 'interval';
         out += ' ' + (d.alive ? 'interval-alive' : 'interval-dead');
@@ -69,6 +71,7 @@ Intervals.prototype.update = function update(config) {
 
         return out;
       })
+      .transition()
       .attr('transform', function (d, i) {
         var x = i * (self.column.width + self.column.padding);
         return 'translate(' + x + ', 0)';
@@ -82,14 +85,16 @@ Intervals.prototype.update = function update(config) {
   ranges.enter().append('rect');
 
   ranges
-      .transition()
       .attr('class', 'range')
+      .transition()
       .attr('x', 0)
       .attr('y', function(d) {
         return scaleY(d.start);
       })
       .attr('width', this.column.width)
       .attr('height', function(d) {
+        if (scaleY(d.end) - scaleY(d.start) < 0)
+          console.log(d);
         return scaleY(d.end) - scaleY(d.start);
       });
 
@@ -103,7 +108,6 @@ Intervals.prototype.update = function update(config) {
   uses.enter().append('rect');
 
   uses
-      .transition()
       .attr('class', function(d) {
         var out = 'use ';
         if (d.value.kind === 'any') {
@@ -116,6 +120,7 @@ Intervals.prototype.update = function update(config) {
         }
         return out;
       })
+      .transition()
       .attr('x', 0)
       .attr('y', function(d) {
         return scaleY(d.pos);
@@ -127,23 +132,29 @@ Intervals.prototype.update = function update(config) {
 Intervals.prototype.createAxis = function createAxis(config, groups) {
   var self = this;
 
-  var lines = new Array(config.input.blocks.length);
-  var max = 0;
-  for (var i = 0, off = lines.length; i < config.input.blocks.length; i++) {
+  var lines = [];
+  var maxLine = 0;
+  for (var i = 0; i < config.input.blocks.length; i++) {
     var block = config.input.blocks[i];
-    max = Math.max(max, block.loc.end);
+    maxLine = Math.max(maxLine, block.loc.end);
 
-    lines[i] = block.loc.line;
-    lines[off++] = block.loc.line;
+    // Gap at block start
+    lines.push(block.loc.line);
     for (var j = 0; j < block.nodes.length; j++) {
       var node = block.nodes[j];
-      lines[off++] = node.loc.line;
-    }
-    lines[off++] = block.loc.end;
-  }
-  var domain = d3.range(0, off);
+      lines.push(node.loc.line);
 
-  var blocks = new Array(max);
+      // Gap after instruction
+      lines.push(node.loc.line + (1 / this.multiplier));
+    }
+
+    // Gap at block end
+    lines.push(block.loc.end);
+  }
+  lines.push(maxLine);
+  var domain = d3.range(0, lines.length);
+
+  var blocks = new Array(maxLine);
   config.input.blocks.forEach(function(block) {
     blocks[block.loc.line - 1] = true;
   }, this);
@@ -151,10 +162,10 @@ Intervals.prototype.createAxis = function createAxis(config, groups) {
   var scaleY = d3.scale.ordinal()
       .domain(domain)
       .range(lines.map(function(line) {
-        return (line - 1) * this.column.tick;
+        return (line - 1) * this.column.tick * this.multiplier;
       }, this));
 
-  var fakeDomain = d3.range(0, max);
+  var fakeDomain = d3.range(0, maxLine * this.multiplier);
   var fakeY = d3.scale.ordinal()
       .domain(fakeDomain)
       .range(fakeDomain.map(function(pos) {
@@ -176,16 +187,20 @@ Intervals.prototype.createAxis = function createAxis(config, groups) {
       .call(axis)
       .selectAll('.tick line')
       .attr('class', function(d) {
-        if (blocks[d])
-          return 'block';
-        else
-          return 'major';
+        if (d % self.multiplier === 0) {
+          if (blocks[(d / self.multiplier) | 0])
+            return 'block';
+          else
+            return 'major';
+        } else {
+          return 'minor';
+        }
       })
       .attr('x2', intervalsWidth);
 
   this.elem.attr('width',
                  this.axis.width + this.axis.padding + intervalsWidth);
-  this.elem.attr('height', this.column.tick * max);
+  this.elem.attr('height', this.column.tick * maxLine * this.multiplier);
 
   return scaleY;
 };

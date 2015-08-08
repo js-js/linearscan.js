@@ -44,6 +44,11 @@ textarea {
   line-height: 8px;
 }
 
+#output .intervals .group-fixed {
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+
 #output .intervals .interval {
   opacity: 0.6;
 }
