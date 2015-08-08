@@ -57,6 +57,8 @@ App.prototype.onChange = function onChange(text) {
   join.exit().remove();
   join.enter()
       .append('div')
+
+  join
       .attr('class', 'source-line')
       .text(function(d) {
         return d;

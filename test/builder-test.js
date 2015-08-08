@@ -1,51 +1,7 @@
 'use strict';
 
-var assertText = require('assert-text');
-assertText.options.trim = true;
-
 var fixtures = require('./fixtures');
-
-function check(b, expected) {
-  var out = '';
-
-  function renderInterval(prefix, interval) {
-    var out = prefix + ' ';
-
-    if (!interval.alive)
-      out += '(dead) ';
-
-    var ranges = interval.ranges.map(function(range) {
-      return range.inspect();
-    }).join(', ');
-
-    out += ranges;
-
-    var uses = interval.uses.concat(interval.fixedUses).map(function(use) {
-      return use.inspect();
-    }).join(', ');
-
-    if (uses)
-      out += ' : ' + uses;
-
-    return out;
-  }
-
-  for (var i = 0; i < b.config.registers.length; i++) {
-    var reg = b.config.registers[i];
-    if (reg.ranges.length === 0)
-      continue;
-
-    out += renderInterval('%' + i, reg) + '\n';
-  }
-
-  for (var i = 0; i < b.intervals.length; i++) {
-    var interval = b.intervals[i];
-    var prefix = interval.start() + '. ' + interval.node.opcode;
-    out += renderInterval(prefix, interval) + '\n';
-  }
-
-  assertText.equal(out, fixtures.fn2str(expected));
-}
+var check = fixtures.check;
 
 describe('Interval Builder', function() {
   it('should work on branch', function() {
@@ -77,7 +33,7 @@ describe('Interval Builder', function() {
 
     b.buildIntervals();
 
-    check(b, function() {/*
+    check(b.config, function() {/*
       %0 [18;19)
 
       0. start (dead) [0;6)
@@ -128,7 +84,7 @@ describe('Interval Builder', function() {
 
     b.buildIntervals();
 
-    check(b, function() {/*
+    check(b.config, function() {/*
       %0 [20;21)
 
       0. start (dead) [0;6)
@@ -173,7 +129,7 @@ describe('Interval Builder', function() {
 
     b.buildIntervals();
 
-    check(b, function() {/*
+    check(b.config, function() {/*
       %0 [8;9), [14;15)
 
       0. start (dead) [0;6)
@@ -205,7 +161,7 @@ describe('Interval Builder', function() {
 
     b.buildIntervals();
 
-    check(b, function() {/*
+    check(b.config, function() {/*
       %0 [5;7)
       %1 [5;6)
       %2 [5;6)
@@ -214,7 +170,7 @@ describe('Interval Builder', function() {
 
       1. literal [1;5) : {1=*}, {5=%*}
       3. literal [3;5) : {3=*}, {5=*}
-      5. call (dead) [5;6) : {5=%0}, {7=%0}
+      5. call %0 (dead) [5;6) : {5=%0}, {7=%0}
       7. return (dead) [7;8)
     */});
   });
@@ -232,7 +188,7 @@ describe('Interval Builder', function() {
 
     b.buildIntervals();
 
-    check(b, function() {/*
+    check(b.config, function() {/*
       %0 [4;5)
 
       0. start (dead) [0;8)
