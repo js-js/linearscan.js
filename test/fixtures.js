@@ -30,7 +30,8 @@ exports.options = {
       spills: [
         { kind: 'register', value: 'rax' },
         { kind: 'register', value: 'rbx' },
-        { kind: 'register', value: 'rcx' }
+        { kind: 'register', value: 'rcx' },
+        { kind: 'register', value: 'rdx' }
       ]
     }
   }

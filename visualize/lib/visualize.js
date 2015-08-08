@@ -17,7 +17,7 @@ var config = {
     },
     add: {
       output: 'any',
-      inputs: [ { kind: 'register', value: 'rax' }, 'any' ]
+      inputs: [ 'any', 'any' ]
     },
     return: {
       inputs: [ { kind: 'register', value: 'rax' } ]

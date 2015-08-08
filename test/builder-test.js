@@ -165,6 +165,7 @@ describe('Interval Builder', function() {
       %0 [5;7)
       %1 [5;6)
       %2 [5;6)
+      %3 [5;6)
 
       0. start (dead) [0;10)
 
