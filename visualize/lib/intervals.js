@@ -20,7 +20,7 @@ function Intervals(selector) {
   };
 
   this.multiplier = 2;
-  this.column.tick = this.column.height / this.multiplier;
+  this.column.tick = this.column.height;
 }
 module.exports = Intervals;
 

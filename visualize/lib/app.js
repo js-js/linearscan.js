@@ -13,7 +13,7 @@ function App(options) {
   this.config = linearscan.config.create(options.config);
 
   this.input = new Input(options.input, options.initial);
-  this.reindexed = new Input(options.reindexed);
+  this.reindexed = d3.select(options.reindexed);
 
   this.allocate = false;
   d3.select(options.allocate).on('change', function() {
@@ -49,8 +49,18 @@ App.prototype.onChange = function onChange(text) {
   }
 
   // Unpad data and remove `pipeline {}` wrap
-  this.reindexed.update(reindexed.replace(/\n  /g, '\n')
-                                 .replace(/^[^\n]+\n|\n[^\n]+$/g, ''));
+  var lines = reindexed.replace(/\n  /g, '\n')
+                       .replace(/^[^\n]+\n|\n[^\n]+$/g, '')
+                       .replace(/\n/g, '\n\n')
+                       .split(/\n/g);
+  var join = this.reindexed.selectAll('div.source-line').data(lines);
+  join.exit().remove();
+  join.enter()
+      .append('div')
+      .attr('class', 'source-line')
+      .text(function(d) {
+        return d;
+      });
 
   p = pipeline.create('dominance');
   p.parse(reindexed, { cfg: true, dominance: true }, 'printable');
