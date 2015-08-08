@@ -199,4 +199,33 @@ describe('Interval Builder', function() {
       5. return (dead) [5;6)
     */});
   });
+
+  it('should split on fixed output', function() {
+    var b = fixtures.createBuilder(fixtures.options, function() {/*
+      pipeline {
+        b0 {
+          i0 = literal "function-name"
+          i1 = literal 0
+          i2 = call i0, i1
+          i3 = add i2, i2
+        }
+      }
+    */});
+
+    b.buildIntervals();
+
+    check(b, function() {/*
+      %0 [5;6)
+      %1 [5;6)
+      %2 [5;6)
+      %3 [5;6)
+
+      0. start (dead) [0;10)
+
+      1. literal [1;5) : {1=*}, {5=%*}
+      3. literal [3;5) : {3=*}, {5=*}
+      5. call %0 (dead) [5;6) : {5=%0}
+      7. add [7;8) : {7=*}
+    */});
+  });
 });
