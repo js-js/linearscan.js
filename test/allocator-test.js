@@ -93,4 +93,40 @@ describe('Interval Allocator', function() {
       %0 = add [1] [1]
     */});
   });
+
+  it('should account register hints', function() {
+    var a = fixtures.createAllocator(fixtures.options, function() {/*
+      pipeline {
+        b0 {
+          i0 = literal 1
+          i1 = literal 2
+          i2 = literal 3
+          i3 = literal 4
+          i4 = literal 5
+          i5 = literal 6
+          i6 = literal 7
+          i7 = add i0, i1
+          i8 = add i2, i3
+          i9 = add i4, i5
+          i10 = return i6
+        }
+      }
+    */});
+
+    a.allocate();
+
+    check(a, function() {/*
+      %0 = literal
+      %1 = literal
+      %2 = literal
+      %3 = literal
+      %2 = literal
+      %2 = literal
+      %0 = literal
+      %1 = add [2] %1
+      %1 = add [0] %3
+      %1 = add [1] %2
+      (none) = return %0
+    */});
+  });
 });

@@ -419,4 +419,25 @@ describe('Interval', function() {
       assert(b.nextChild() === null);
     });
   });
+
+  describe('prevChild', function() {
+    it('should return root when called on first child', function() {
+      interval.addRange(0, 60);
+
+      var a = interval.split(20);
+
+      assert(a.prevChild() === interval);
+    });
+
+    it('should return prev child if called on child', function() {
+      interval.addRange(0, 60);
+
+      var a = interval.split(20);
+      var b = a.split(40);
+
+      assert(interval.prevChild() === null);
+      assert(a.prevChild() === interval);
+      assert(b.prevChild() === a);
+    });
+  });
 });
