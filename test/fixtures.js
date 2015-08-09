@@ -141,8 +141,14 @@ exports.checkAllocator = function checkAllocator(allocator, expected) {
   var config = allocator.config;
 
   function interval(node, at) {
-    var child = config.intervals[node.index].childAt(
-        config.positions[at.index]);
+    var root = config.intervals[node.index];
+    var pos = config.positions[at.index];
+
+    var child;
+    if (root.start() === pos)
+      child = root.childAt(pos);
+    else
+      child = root.childAt(pos - 1);
 
     if (child.value === null) {
       assert(!child.alive);
