@@ -137,4 +137,46 @@ describe('Interval Resolver', function() {
       19: %0 = add %3, %3
     */});
   });
+
+  it('should resolve phis', function() {
+    var r = fixtures.createResolver(fixtures.options, function() {/*
+      pipeline {
+        b0 {
+          i0 = if ^b0
+        }
+        b0 -> b1, b2
+
+        b1 {
+          i1 = rax-out
+          i2 = jump ^b1
+        }
+        b1 -> b3
+
+        b2 {
+          i3 = rbx-out
+          i4 = jump ^b2
+        }
+        b2 -> b3
+
+        b3 {
+          i5 = ssa:phi ^b3, i1, i3
+          i6 = return i5
+        }
+      }
+    */});
+
+    r.resolve();
+
+    check(r, function() {/*
+      1: if &5, &11
+
+      5: %1 = rax-out
+      7: jump &19
+
+      11: %1 = rbx-out
+      13: jump &19
+
+      19: return %0
+    */});
+  });
 });

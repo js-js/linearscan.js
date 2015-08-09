@@ -9,24 +9,26 @@ describe('Interval Builder', function() {
       pipeline {
         b0 {
           i0 = literal 3
-          i1 = if
+          i1 = if ^b0
         }
         b0 -> b1, b2
 
         b1 {
           i2 = literal 1
+          i3 = jump ^b1
         }
         b1 -> b3
 
         b2 {
-          i3 = literal 2
+          i4 = literal 2
+          i5 = jump ^b2
         }
         b2 -> b3
 
         b3 {
-          i4 = ssa:phi i2, i3
-          i5 = add i0, i4
-          i6 = return i5
+          i6 = ssa:phi ^b3, i2, i4
+          i7 = add i0, i6
+          i8 = return ^b3, i7
         }
       }
     */});
@@ -34,23 +36,25 @@ describe('Interval Builder', function() {
     b.buildIntervals();
 
     check(b, function() {/*
-      %0 [18;19)
+      %0 [22;23)
 
       0. start (dead) [0;6)
-      6. region (dead) [6;10)
-      10. region (dead) [10;14)
-      14. region (dead) [14;22)
+      6. region (dead) [6;12)
+      12. region (dead) [12;18)
+      18. region (dead) [18;26)
 
-      1. literal [1;17) : {1=*}, {17=*}
+      1. literal [1;21) : {1=*}, {21=*}
       3. if (dead) [3;4)
 
-      7. literal [7;10) : {7=*}, {15=*}
+      7. literal [7;12) : {7=*}, {19=*}
+      9. jump (dead) [9;10)
 
-      11. literal [11;14) : {11=*}, {15=*}
+      13. literal [13;18) : {13=*}, {19=*}
+      15. jump (dead) [15;16)
 
-      14. ssa:phi [14;17) : {15=*}, {17=*}
-      17. add [17;18) : {17=*}, {19=%0}
-      19. return (dead) [19;20)
+      18. ssa:phi [18;21) : {19=*}, {21=*}
+      21. add [21;22) : {21=*}, {23=%0}
+      23. return (dead) [23;24)
     */});
   });
 
@@ -59,25 +63,25 @@ describe('Interval Builder', function() {
       pipeline {
         b0 {
           i0 = literal 0
-          i1 = jump
+          i1 = jump ^b0
         }
         b0 -> b1
 
         b1 {
-          i2 = ssa:phi i0, i5
-          i3 = if
+          i2 = ssa:phi ^b1, i0, i5
+          i3 = if ^b1
         }
         b1 -> b2, b3
 
         b2 {
           i4 = literal 1
           i5 = add i2, i4
-          i6 = jump
+          i6 = jump ^b2
         }
         b2 -> b1
 
         b3 {
-          i7 = return i2
+          i7 = return ^b3, i2
         }
       }
     */});
@@ -111,18 +115,18 @@ describe('Interval Builder', function() {
       pipeline {
         b0 {
           i0 = literal 0
-          i1 = jump
+          i1 = jump ^b0
         }
         b0 -> b1, b2
 
         b1 {
           i2 = literal 1
-          i3 = return i2
+          i3 = return ^b1, i2
         }
 
         b2 {
           i4 = add i0, i0
-          i5 = return i0
+          i5 = return ^b2, i0
         }
       }
     */});
