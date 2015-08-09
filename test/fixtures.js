@@ -24,6 +24,16 @@ exports.options = {
     return: {
       inputs: [ { kind: 'register', value: 'rax' } ]
     },
+    'rbx-call': {
+      inputs: [],
+      output: { kind: 'register', value: 'rbx' },
+      spills: [
+        { kind: 'register', value: 'rax' },
+        { kind: 'register', value: 'rbx' },
+        { kind: 'register', value: 'rcx' },
+        { kind: 'register', value: 'rdx' }
+      ]
+    },
     call: {
       output: { kind: 'register', value: 'rax' },
       inputs: [ 'register', 'any' ],
@@ -54,22 +64,20 @@ exports.createBuilder = function createBuilder(options, source) {
   return linearscan.builder.create(p, config);
 };
 
-
 exports.createAllocator = function createAllocator(options, source) {
-  var p = pipeline.create('dominance');
-
-  p.parse(exports.fn2str(source), {
-    cfg: true
-  }, 'printable');
-
-  p.reindex();
-
-  var config = linearscan.config.create(options);
-  var builder = linearscan.builder.create(p, config);
+  var builder = exports.createBuilder(options, source);
 
   builder.buildIntervals();
 
-  return linearscan.allocator.create(config);
+  return linearscan.allocator.create(builder.config);
+};
+
+exports.createResolver = function createResolver(options, source) {
+  var allocator = exports.createAllocator(options, source);
+
+  allocator.allocate();
+
+  return linearscan.resolver.create(allocator.config);
 };
 
 exports.checkBuilder = function checkBuilder(builder, expected) {
@@ -148,6 +156,17 @@ exports.checkAllocator = function checkAllocator(allocator, expected) {
       out += ' ' + interval(node.inputs[j], node);
     out += '\n';
   }
+
+  assertText.equal(out, exports.fn2str(expected));
+};
+
+exports.checkResolver = function checkResolver(resolver, expected) {
+  var out = '';
+  var config = resolver.config;
+
+  for (var i = 0; i < config.instructions.length; i++)
+    if (resolver.instructions[i] !== null)
+      out += resolver.instructions[i].inspect() + '\n';
 
   assertText.equal(out, exports.fn2str(expected));
 };

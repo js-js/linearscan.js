@@ -22,6 +22,16 @@ var config = {
     return: {
       inputs: [ { kind: 'register', value: 'rax' } ]
     },
+    'rbx-call': {
+      inputs: [],
+      output: { kind: 'register', value: 'rbx' },
+      spills: [
+        { kind: 'register', value: 'rax' },
+        { kind: 'register', value: 'rbx' },
+        { kind: 'register', value: 'rcx' },
+        { kind: 'register', value: 'rdx' }
+      ]
+    },
     call: {
       output: { kind: 'register', value: 'rax' },
       inputs: [ 'register', 'any' ],
