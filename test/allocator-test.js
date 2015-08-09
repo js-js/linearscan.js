@@ -51,12 +51,12 @@ describe('Interval Allocator', function() {
       %1 = literal
       %2 = literal
       %3 = literal
-      %3 = literal
+      [0] = literal
       %0 = add %0 %0
       %0 = add %1 %1
       %0 = add %2 %2
-      %0 = add [0] [0]
       %0 = add %3 %3
+      %0 = add [0] [0]
     */});
   });
 
@@ -85,12 +85,12 @@ describe('Interval Allocator', function() {
       %1 = literal
       %2 = literal
       %3 = literal
-      %1 = literal
+      [0] = literal
       %0 = call %0 %0
-      %0 = add [4] [4]
       %0 = add [3] [3]
       %0 = add [2] [2]
       %0 = add [1] [1]
+      %0 = add [0] [0]
     */});
   });
 
@@ -120,12 +120,12 @@ describe('Interval Allocator', function() {
       %1 = literal
       %2 = literal
       %3 = literal
-      %2 = literal
-      %2 = literal
-      %0 = literal
-      %1 = add [2] %1
-      %1 = add [0] %3
-      %1 = add [1] %2
+      [0] = literal
+      [1] = literal
+      [2] = literal
+      %0 = add %0 %1
+      %0 = add %2 %3
+      %0 = add [0] [1]
       (none) = return %0
     */});
   });

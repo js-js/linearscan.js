@@ -228,7 +228,7 @@ describe('Interval Builder', function() {
 
       2. literal [2;6) : {2=*}, {6=%*}
       4. literal [4;6) : {4=*}, {6=*}
-      6. call %0 (dead) [6;7) : {6=%0}
+      6. call %0 (dead) [6;7) : {8=*}, {8=*}, {6=%0}
       8. add [8;9) : {8=*}
     */});
   });

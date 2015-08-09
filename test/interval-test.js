@@ -305,9 +305,6 @@ describe('Interval', function() {
 
         var child = interval.split(2);
 
-        assert.equal(interval.uses.length, 1);
-        assert.equal(interval.uses[0].pos, 1);
-
         assert.equal(child.uses.length, 2);
         assert.equal(child.uses[0].pos, 3);
         assert.equal(child.uses[1].pos, 5);
@@ -319,9 +316,6 @@ describe('Interval', function() {
         interval.use(3, new Operand('any'));
 
         var child = interval.split(2);
-
-        assert.equal(interval.uses.length, 1);
-        assert.equal(interval.uses[0].pos, 1);
 
         assert.equal(child.uses.length, 2);
         assert.equal(child.uses[0].pos, 2);

@@ -45,6 +45,41 @@ describe('Interval Resolver', function() {
     */});
   });
 
+  it('should resolve spills during call', function() {
+    var r = fixtures.createResolver(fixtures.options, function() {/*
+      pipeline {
+        b0 {
+          i0 = literal 1
+          i1 = literal 2
+          i2 = literal 3
+          i3 = literal 4
+          i4 = literal 5
+          i5 = call i0, i0
+          i6 = add i1, i1
+          i7 = add i2, i2
+          i8 = add i3, i3
+          i9 = add i4, i4
+        }
+      }
+    */});
+
+    r.resolve();
+
+    check(r, function() {/*
+      2: %0 = literal
+      4: %1 = literal
+      6: %2 = literal
+      8: %3 = literal
+      10: [0] = literal
+      11: gap {%1=>[3],%2=>[2],%3=>[1]}
+      12: %0 = call %0, %0
+      14: %0 = add [3], [3]
+      16: %0 = add [2], [2]
+      18: %0 = add [1], [1]
+      20: %0 = add [0], [0]
+    */});
+  });
+
   it('should resolve with move at fixed with return', function() {
     var r = fixtures.createResolver(fixtures.options, function() {/*
       pipeline {
@@ -93,13 +128,12 @@ describe('Interval Resolver', function() {
       4: %1 = literal
       6: %2 = literal
       8: %3 = literal
-      9: gap {%3=>[0]}
-      10: %3 = literal
+      10: [0] = literal
       12: %0 = add %0, %0
       14: %0 = add %1, %1
       16: %0 = add %2, %2
-      18: %0 = add [0], [0]
-      20: %0 = add %3, %3
+      18: %0 = add %3, %3
+      20: %0 = add [0], [0]
     */});
   });
 
@@ -234,6 +268,42 @@ describe('Interval Resolver', function() {
 
       20: gap {%1=>%0}
       21: return %0
+    */});
+  });
+
+  it('should respect register uses', function() {
+    var r = fixtures.createResolver(fixtures.options, function() {/*
+      pipeline {
+        b0 {
+          i0 = literal 1
+          i1 = literal 2
+          i2 = literal 3
+          i3 = literal 4
+          i4 = literal 5
+          i5 = call i4, i0
+          i6 = add i1, i1
+          i7 = add i2, i2
+          i8 = add i3, i3
+          i9 = add i4, i4
+        }
+      }
+    */});
+
+    r.resolve();
+
+    check(r, function() {/*
+      2: %0 = literal
+      4: %1 = literal
+      6: %2 = literal
+      8: %3 = literal
+      9: gap {%3=>[0]}
+      10: %3 = literal
+      11: gap {%1=>[3],%2=>[2],%3=>[0],[0]=>[1]}
+      12: %0 = call %3, %0
+      14: %0 = add [3], [3]
+      16: %0 = add [2], [2]
+      18: %0 = add [1], [1]
+      20: %0 = add [0], [0]
     */});
   });
 });
