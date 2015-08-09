@@ -180,4 +180,51 @@ describe('Interval Resolver', function() {
       19: return %0
     */});
   });
+
+  it('should generate moves at block edges', function() {
+    var r = fixtures.createResolver(fixtures.options, function() {/*
+      pipeline {
+        b0 {
+          i0 = jump ^b0
+        }
+        b0 -> b1
+
+        b1 {
+          i1 = rax-out
+          i2 = jump ^b1
+        }
+        b1 -> b2, b3
+
+        b2 {
+          i3 = rax-out
+          i4 = add i1, i3
+          i5 = jump ^b2
+        }
+        b2 -> b1
+
+        b3 {
+          i6 = add i1, i1
+          i7 = return i6
+        }
+      }
+    */});
+
+    r.resolve();
+
+    check(r, function() {/*
+      1: jump &5
+
+      5: %0 = rax-out
+      7: jump &10, &19
+
+      10. gap {%0=>%1}
+      11: %0 = rax-out
+      13: %0 = add %1, %0
+      15: jump &5
+
+      18. gap {%0=>%1}
+      19: %0 = add %1, %1
+      21: return %0
+    */});
+  });
 });

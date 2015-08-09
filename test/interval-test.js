@@ -395,8 +395,7 @@ describe('Interval', function() {
       assert(interval.childAt(10) === interval);
       assert(interval.childAt(30) === a);
       assert(interval.childAt(45) === b);
-      assert(interval.childAt(60) === b);
-      assert(interval.childAt(70) === null);
+      assert(interval.childAt(60) === null);
     });
   });
 
