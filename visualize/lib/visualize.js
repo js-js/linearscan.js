@@ -24,7 +24,7 @@ var config = {
     },
     'rax-out': {
       inputs: [],
-      output: { kind: 'register', value: 'rbx' },
+      output: { kind: 'register', value: 'rax' },
       spills: []
     },
     'rbx-out': {

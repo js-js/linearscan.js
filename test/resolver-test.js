@@ -170,10 +170,11 @@ describe('Interval Resolver', function() {
     check(r, function() {/*
       1: if &5, &11
 
-      5: %1 = rax-out
+      5: %0 = rax-out
       7: jump &19
 
       11: %1 = rbx-out
+      12. gap {%1=>%0}
       13: jump &19
 
       19: return %0

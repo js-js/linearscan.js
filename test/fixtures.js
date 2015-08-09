@@ -26,7 +26,7 @@ exports.options = {
     },
     'rax-out': {
       inputs: [],
-      output: { kind: 'register', value: 'rbx' },
+      output: { kind: 'register', value: 'rax' },
       spills: []
     },
     'rbx-out': {
