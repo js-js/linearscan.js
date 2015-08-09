@@ -19,10 +19,10 @@ describe('Interval Resolver', function() {
     r.resolve();
 
     check(r, function() {/*
-      1: %0 = literal
-      3: %1 = literal
-      5: %0 = add %0, %1
-      7: return %0
+      2: %0 = literal
+      4: %1 = literal
+      6: %0 = add %0, %1
+      8: return %0
     */});
   });
 
@@ -39,13 +39,13 @@ describe('Interval Resolver', function() {
     r.resolve();
 
     check(r, function() {/*
-      1: %1 = rbx-call
-      2. gap {%1=>%0}
-      3: return %0
+      2: %1 = rbx-call
+      3: gap {%1=>%0}
+      4: return %0
     */});
   });
 
-  it('should resolve with move at fixed', function() {
+  it('should resolve with move at fixed with return', function() {
     var r = fixtures.createResolver(fixtures.options, function() {/*
       pipeline {
         b0 {
@@ -60,11 +60,11 @@ describe('Interval Resolver', function() {
     r.resolve();
 
     check(r, function() {/*
-      1: %0 = literal
-      3: %1 = literal
-      5: %0 = add %0, %1
-      6. gap {%1=>%0}
-      7: return %0
+      2: %0 = literal
+      4: %1 = literal
+      6: %0 = add %0, %1
+      7: gap {%1=>%0}
+      8: return %0
     */});
   });
 
@@ -89,52 +89,17 @@ describe('Interval Resolver', function() {
     r.resolve();
 
     check(r, function() {/*
-      1: %0 = literal
-      3: %1 = literal
-      5: %2 = literal
-      7: %3 = literal
-      8. gap {%3=>[0]}
-      9: %3 = literal
-      11: %0 = add %0, %0
-      13: %0 = add %1, %1
-      15: %0 = add %2, %2
-      17: %0 = add [0], [0]
-      19: %0 = add %3, %3
-    */});
-  });
-
-  it('should resolve with spills', function() {
-    var r = fixtures.createResolver(fixtures.options, function() {/*
-      pipeline {
-        b0 {
-          i0 = literal 1
-          i1 = literal 2
-          i2 = literal 3
-          i3 = literal 4
-          i4 = literal 5
-          i5 = add i0, i0
-          i6 = add i1, i1
-          i7 = add i2, i2
-          i8 = add i3, i3
-          i9 = add i4, i4
-        }
-      }
-    */});
-
-    r.resolve();
-
-    check(r, function() {/*
-      1: %0 = literal
-      3: %1 = literal
-      5: %2 = literal
-      7: %3 = literal
-      8. gap {%3=>[0]}
-      9: %3 = literal
-      11: %0 = add %0, %0
-      13: %0 = add %1, %1
-      15: %0 = add %2, %2
-      17: %0 = add [0], [0]
-      19: %0 = add %3, %3
+      2: %0 = literal
+      4: %1 = literal
+      6: %2 = literal
+      8: %3 = literal
+      9: gap {%3=>[0]}
+      10: %3 = literal
+      12: %0 = add %0, %0
+      14: %0 = add %1, %1
+      16: %0 = add %2, %2
+      18: %0 = add [0], [0]
+      20: %0 = add %3, %3
     */});
   });
 
@@ -168,16 +133,16 @@ describe('Interval Resolver', function() {
     r.resolve();
 
     check(r, function() {/*
-      1: if &5, &11
+      2: if &7, &14
 
-      5: %0 = rax-out
-      7: jump &19
+      7: %0 = rax-out
+      9: jump &23
 
-      11: %1 = rbx-out
-      12. gap {%1=>%0}
-      13: jump &19
+      14: %1 = rbx-out
+      15: gap {%1=>%0}
+      16: jump &23
 
-      19: return %0
+      23: return %0
     */});
   });
 
@@ -212,18 +177,62 @@ describe('Interval Resolver', function() {
     r.resolve();
 
     check(r, function() {/*
-      1: jump &5
+      2: jump &7
 
-      5: %0 = rax-out
-      7: jump &10, &19
+      7: %0 = rax-out
+      9: jump &13, &21
 
-      10. gap {%0=>%1}
-      11: %0 = rax-out
-      13: %0 = add %1, %0
-      15: jump &5
+      13: gap {%0=>%1}
+      14: %0 = rax-out
+      16: %0 = add %1, %0
+      18: jump &7
 
-      18. gap {%0=>%1}
-      19: %0 = add %1, %1
+      21: gap {%0=>%1}
+      23: %0 = add %1, %1
+      25: return %0
+    */});
+  });
+
+  it('should generate moves at merge', function() {
+    var r = fixtures.createResolver(fixtures.options, function() {/*
+      pipeline {
+        b0 {
+          i0 = rax-out
+          i1 = if ^b0
+        }
+        b0 -> b1, b2
+
+        b1 {
+          i2 = rax-out
+          i3 = jump ^b1
+        }
+        b1 -> b3
+
+        b2 {
+          i4 = jump ^b2
+        }
+        b2 -> b3
+
+        b3 {
+          i5 = return i0
+        }
+      }
+    */});
+
+    r.resolve();
+
+    check(r, function() {/*
+      2: %0 = rax-out
+      4: if &8, &14
+
+      8: gap {%0=>%1}
+      9: %0 = rax-out
+      11: jump &20
+
+      14: gap {%0=>%1}
+      16: jump &20
+
+      20: gap {%1=>%0}
       21: return %0
     */});
   });

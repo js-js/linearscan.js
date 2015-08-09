@@ -140,6 +140,10 @@ Intervals.prototype.createAxis = function createAxis(config, groups) {
 
     // Gap at block start
     lines.push(block.loc.line);
+
+    // Gap before first instruction
+    lines.push(block.loc.line);
+
     for (var j = 0; j < block.nodes.length; j++) {
       var node = block.nodes[j];
       lines.push(node.loc.line);
