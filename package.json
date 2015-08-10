@@ -25,12 +25,13 @@
     "assert-text": "^1.1.0",
     "jscs": "^2.0.0",
     "jshint": "^2.8.0",
-    "json-pipeline": "^2.3.0",
     "mocha": "^2.2.5"
   },
   "dependencies": {
     "binary-search": "^1.2.0",
     "bit-set.js": "^1.0.1",
-    "bitfield.js": "^1.2.0"
+    "bitfield.js": "^1.2.0",
+    "json-pipeline": "^2.7.0",
+    "parallel-move": "^1.0.0"
   }
 }
