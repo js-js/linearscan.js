@@ -6,210 +6,108 @@ Linearscan register allocator for javascript
 
 ```javascript
 // Declare some instructions
-var ls = require('linearscan').create({
-  // All possible registers
+var linearscan = require('linearscan');
+
+var config = linearscan.config.create({
+  // List of available registers
   registers: [ 'rax', 'rbx', 'rcx', 'rdx' ],
 
-  // All instructions
-  instructions: {
-    // With this declaration it will be possible to pass
-    // javascript value as an input of `literal` instruction,
-    // skipping the register allocation for it, but preserving it
-    // in the result JSON
-    literal: { inputs: [ { type: 'js' } ] },
-
-    // Normally, you should specify output/inputs types, which could be:
-    // * `{ type: 'any' }` - either register or memory slot
-    // * `{ type: 'register' }` - any register
-    // * `{ type: 'register', id: '<register name>' }` - specific register
+  // Available opcodes
+  opcodes: {
+    literal: {
+      // `any` means either `register` or `spill`
+      output: 'any'
+    },
+    if: {},
+    jump: {},
+    'ssa:phi': {
+      output: 'any',
+      inputs: [ 'any', 'any' ]
+    },
     add: {
-      output: { type: 'any' },
-      inputs: [ { type: 'register' }, { type: 'register' } ]
+      output: 'any',
+      inputs: [ 'any', 'any' ]
     },
-
-    // Instruction with no output
-    ret: {
-      output: null,
-      inputs: [ { type: 'register', id: 'rax' } ]
+    return: {
+      // Specify particular register requirement
+      inputs: [ { kind: 'register', value: 'rax' } ]
     },
-
-    branch: {
-      output: null,
-      inputs: [ { type: 'register' }, { type: 'register' } ]
+    'rax-out': {
+      inputs: [],
+      output: { kind: 'register', value: 'rax' },
+      spills: []
+    },
+    'rbx-out': {
+      inputs: [],
+      output: { kind: 'register', value: 'rbx' },
+      spills: []
+    },
+    'rbx-call': {
+      inputs: [],
+      output: { kind: 'register', value: 'rbx' },
+      spills: [
+        { kind: 'register', value: 'rax' },
+        { kind: 'register', value: 'rbx' },
+        { kind: 'register', value: 'rcx' },
+        { kind: 'register', value: 'rdx' }
+      ]
+    },
+    call: {
+      output: { kind: 'register', value: 'rax' },
+      // `register` means any kind of register
+      inputs: [ 'register', 'any' ],
+      spills: [
+        { kind: 'register', value: 'rax' },
+        { kind: 'register', value: 'rbx' },
+        { kind: 'register', value: 'rcx' },
+        { kind: 'register', value: 'rdx' }
+      ]
     }
   }
 });
 
-// Pass CFG blocks as an input of the register allocator
-var out = ls.run([
-  {
-    id: 'B1', // Block id
-    successors: [ 'B2' ], // Id of successors blocks (optional, 2 maximum)
+// Get pipeline from previous stages of compiler
+// (see json-pipeline npm module)
+var pipeline = getPipeline();
 
-    // Instructions
-    instructions: [
-      {
-        id: 'one', // Id of instruction, must be unique
-        type: 'literal',
-        inputs: [ { type: 'js', value: 42 } ]
-      },
-      {
-        id: 'sum',
-        type: 'add',
-        inputs: [
-          // Use other instruction as an input
-          { type: 'instruction', id: 'one' },
-          { type: 'instruction', id: 'one' }
-        ]
-      }
-    ]
-  }, {
-    id: 'B2',
-    instructions: [
-      { type: 'ret', inputs: [ { type: 'instruction', id: 'sum' } ] }
-    ]
-  }
-]);
+// Make sure that pipeline is properly indexed
+pipeline.reindex();
 
-console.log(require('util').inspect(out, false, 300));
+var out = linearscan.allocate(pipeline, config);
+console.log(out.render('printable'));
 ```
 
-Will output:
+Will output something like this:
 
 ```javascript
-[ { id: 'B1',
-    instructions:
-     [ { id: 'one',
-         type: 'literal',
-         inputs: [ { type: 'js', value: 42 } ],
-         moves: null,
-         temporary: [],
-         output: { type: 'register', id: 'rax' } },
-       { id: 'sum',
-         type: 'add',
-         inputs:
-          [ { type: 'register', id: 'rax' },
-            { type: 'register', id: 'rax' } ],
-         moves: null,
-         temporary: [],
-         output: { type: 'register', id: 'rax' } } ],
-    successors: [ 'B2' ] },
-  { id: 'B2',
-    instructions:
-     [ { id: null,
-         type: 'ret',
-         inputs: [ { type: 'register', id: 'rax' } ],
-         moves: null,
-         temporary: [],
-         output: null } ],
-    successors: [] } ]
+register {
+  %rax = literal 1
+  %rbx = literal 2
+  %rcx = literal 3
+  %rdx = literal 4
+  [0] = ls:move %3
+  %rdx = literal 5
+  [1] = ls:move [0]
+  [3] = ls:move %1
+  [2] = ls:move %2
+  [0] = ls:move %3
+  %rax = call %rdx, %rax
+  %rax = add [3], [3]
+  %rax = add [2], [2]
+  %rax = add [1], [1]
+  %rax = add [0], [0]
+}
 ```
-
-## Intermediate Language
-
-You may also find it more comfortable to use custom IL for writing blocks with
-instructions, please take a look at [SSA-IR][1] module for this.
-
-## Phis and ToPhis
-
-There're a couple of intrinsic instructions with a special meaning, one of them
-are: `phi` and `to_phi`. The best way to describe how it works would an IL
-example:
-
-```IL
-block B1 -> B2, B3
-  a = literal %0
-  b = literal %1
-  branch a, b
-block B2
-  to_phi out, a
-block B3
-  to_phi out, b
-block B4
-  out = phi
-  ret out
-```
-
-Basically, since IR and IL is in [SSA][0] form, variables that have their value
-depend on the branching or loop iterations, should be assigned to the final
-value using `to_phi` instruction: second argument - intermediate value, first -
-final phi value, that must be declared with `<id> = phi` in a successor block.
-
-## Gap
-
-The IL code above will generate following JSON output:
-
-```javascript
-[ { id: 'B1',
-    instructions:
-     [ { id: 'a',
-         type: 'literal',
-         inputs: [ { type: 'js', value: 0 } ],
-         moves: null,
-         temporary: [],
-         output: { type: 'register', id: 'rax' } },
-       { id: 'b',
-         type: 'literal',
-         inputs: [ { type: 'js', value: 1 } ],
-         moves: null,
-         temporary: [],
-         output: { type: 'register', id: 'rbx' } },
-       { id: null,
-         type: 'branch',
-         inputs:
-          [ { type: 'register', id: 'rax' },
-            { type: 'register', id: 'rbx' } ],
-         moves: null,
-         temporary: [],
-         output: null } ],
-    successors: [ 'B2', 'B3' ] },
-  { id: 'B3',
-    instructions:
-     [ { id: null,
-         type: 'gap',
-         inputs: [],
-         moves:
-          [ { type: 'move',
-              from: { type: 'register', id: 'rbx' },
-              to: { type: 'register', id: 'rax' } } ],
-         temporary: [],
-         output: null } ],
-    successors: [ 'B4' ] },
-  { id: 'B2', instructions: [], successors: [ 'B4' ] },
-  { id: 'B4',
-    instructions:
-     [ { id: null,
-         type: 'ret',
-         inputs: [ { type: 'register', id: 'rax' } ],
-         moves: null,
-         temporary: [],
-         output: null } ],
-    successors: [] } ]
-```
-
-You could notice that `gap` instruction has appeared in output, but wasn't
-present in the input. It is an another intrinsic instruction.
-
-Basically, it contains all moves between registers/stack slots that must happen
-at the time when gap instruction is reached. Note that `moves` may have two
-types: `move` and `swap`. In case of `move` the value should be simply moved
-from one location to another, and in case of `swap` values should be swapped
-between each other.
 
 ## Spill count
 
-You may get number of stack slots that will be used in resulting code by
-calling this after `ls.run()`:
-
-```javascript
-ls.spillCount()
-```
+`out.spills` is the number of used spill slots
 
 #### LICENSE
 
 This software is licensed under the MIT License.
 
-Copyright Fedor Indutny, 2014.
+Copyright Fedor Indutny, 2015.
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the
@@ -229,6 +127,3 @@ NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
 DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-[0]: http://en.wikipedia.org/wiki/Static_single_assignment_form
-[1]: https://github.com/indutny/ssa-ir

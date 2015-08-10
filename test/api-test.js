@@ -1,14 +1,18 @@
 'use strict';
 
+var pipeline = require('json-pipeline');
 var assertText = require('assert-text');
 assertText.options.trim = true;
 
+var linearscan = require('../');
 var fixtures = require('./fixtures');
 var check = fixtures.checkResolver;
 
 describe('Interval Resolver', function() {
   it('should respect register uses', function() {
-    var r = fixtures.createResolver(fixtures.options, function() {/*
+    var p = pipeline.create('dominance');
+
+    p.parse(fixtures.fn2str(function() {/*
       pipeline {
         b0 {
           i0 = literal 1
@@ -23,11 +27,14 @@ describe('Interval Resolver', function() {
           i9 = add i4, i4
         }
       }
-    */});
+    */}), {
+      cfg: true
+    }, 'printable');
 
-    r.resolve();
+    p.reindex();
 
-    var out = r.config.getOutput();
+    var config = linearscan.config.create(fixtures.options);
+    var out = linearscan.allocate(p, config);
 
     assertText.equal(out.render('printable'), fixtures.fn2str(function() {/*
       register {
