@@ -5,53 +5,60 @@ var assert = require('assert');
 var assertText = require('assert-text');
 assertText.options.trim = true;
 
+function gp(kind, value) {
+  return { kind: kind, group: 'gp', value: value };
+}
+
 exports.options = {
-  registers: [ 'rax', 'rbx', 'rcx', 'rdx' ],
+  registers: {
+    gp: [
+      'rax', 'rbx', 'rcx', 'rdx'
+    ],
+    fp: [
+      'xmm1', 'xmm2', 'xmm3', 'xmm4'
+    ]
+  },
   opcodes: {
     literal: {
-      output: 'any'
+      output: gp('any')
     },
     if: {},
     jump: {},
-    'ssa:phi': {
-      output: 'any',
-      inputs: [ 'any', 'any' ]
-    },
     add: {
-      output: 'any',
-      inputs: [ 'any', 'any' ]
+      output: gp('any'),
+      inputs: [ gp('any'), gp('any') ]
     },
     return: {
-      inputs: [ { kind: 'register', value: 'rax' } ]
+      inputs: [ gp('register', 'rax') ]
     },
     'rax-out': {
       inputs: [],
-      output: { kind: 'register', value: 'rax' },
+      output: gp('register', 'rax'),
       spills: []
     },
     'rbx-out': {
       inputs: [],
-      output: { kind: 'register', value: 'rbx' },
+      output: gp('register', 'rbx'),
       spills: []
     },
     'rbx-call': {
       inputs: [],
-      output: { kind: 'register', value: 'rbx' },
+      output: gp('register', 'rbx'),
       spills: [
-        { kind: 'register', value: 'rax' },
-        { kind: 'register', value: 'rbx' },
-        { kind: 'register', value: 'rcx' },
-        { kind: 'register', value: 'rdx' }
+        gp('register', 'rax'),
+        gp('register', 'rbx'),
+        gp('register', 'rcx'),
+        gp('register', 'rdx')
       ]
     },
     call: {
-      output: { kind: 'register', value: 'rax' },
-      inputs: [ 'register', 'any' ],
+      output: gp('register', 'rax'),
+      inputs: [ gp('register'), gp('any') ],
       spills: [
-        { kind: 'register', value: 'rax' },
-        { kind: 'register', value: 'rbx' },
-        { kind: 'register', value: 'rcx' },
-        { kind: 'register', value: 'rdx' }
+        gp('register', 'rax'),
+        gp('register', 'rbx'),
+        gp('register', 'rcx'),
+        gp('register', 'rdx')
       ]
     }
   }
@@ -74,20 +81,40 @@ exports.createBuilder = function createBuilder(options, source) {
   return linearscan.builder.create(p, config);
 };
 
-exports.createAllocator = function createAllocator(options, source) {
+exports.createAllocator = function createAllocator(options, group, source) {
+  if (source === undefined) {
+    source = group;
+    group = 'gp';
+  }
+
   var builder = exports.createBuilder(options, source);
 
-  builder.buildIntervals();
+  builder.build();
 
-  return linearscan.allocator.create(builder.config);
+  return linearscan.allocator.create(builder.config, group);
+};
+
+exports.withAllocator = function withAllocator(options, source, body) {
+  var builder = exports.createBuilder(options, source);
+
+  builder.build();
+
+  for (var i = 0; i < builder.config.groups.length; i++) {
+    var group = builder.config.groups[i];
+    var alloc = linearscan.allocator.create(builder.config, group);
+
+    body(alloc);
+  }
+
+  return builder.config;
 };
 
 exports.createResolver = function createResolver(options, source) {
-  var allocator = exports.createAllocator(options, source);
+  var config = exports.withAllocator(options, source, function(allocator) {
+    allocator.allocate();
+  });
 
-  allocator.allocate();
-
-  return linearscan.resolver.create(allocator.config);
+  return linearscan.resolver.create(config);
 };
 
 exports.checkBuilder = function checkBuilder(builder, expected) {
@@ -151,7 +178,7 @@ exports.checkAllocator = function checkAllocator(allocator, expected) {
       child = root.childAt(pos - 1);
 
     if (child.value === null) {
-      assert(!child.alive);
+      assert(child.group !== allocator.group || !child.alive);
       return '(none)';
     }
     return child.value.inspect();

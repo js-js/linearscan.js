@@ -70,12 +70,15 @@ App.prototype.onChange = function onChange(text) {
 
   var builder = linearscan.builder.create(p, this.config);
 
-  builder.buildIntervals();
+  builder.build();
 
   if (this.allocate) {
-    var allocator = linearscan.allocator.create(this.config);
+    for (var i = 0; i < this.config.groups.length; i++) {
+      var group = this.config.groups[i];
+      var allocator = linearscan.allocator.create(this.config, group);
 
-    allocator.allocate();
+      allocator.allocate();
+    }
   }
 
   this.render();

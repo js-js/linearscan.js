@@ -2,54 +2,60 @@
 
 var App = require('./app');
 
-var config = {
-  registers: [ 'rax', 'rbx', 'rcx', 'rdx' ],
+function gp(kind, value) {
+  return { kind: kind, group: 'gp', value: value };
+}
 
+var config = {
+  registers: {
+    gp: [
+      'rax', 'rbx', 'rcx', 'rdx'
+    ],
+    fp: [
+      'xmm1', 'xmm2', 'xmm3', 'xmm4'
+    ]
+  },
   opcodes: {
     literal: {
-      output: 'any'
+      output: gp('any')
     },
     if: {},
     jump: {},
-    'ssa:phi': {
-      output: 'any',
-      inputs: [ 'any', 'any' ]
-    },
     add: {
-      output: 'any',
-      inputs: [ 'any', 'any' ]
+      output: gp('any'),
+      inputs: [ gp('any'), gp('any') ]
     },
     return: {
-      inputs: [ { kind: 'register', value: 'rax' } ]
+      inputs: [ gp('register', 'rax') ]
     },
     'rax-out': {
       inputs: [],
-      output: { kind: 'register', value: 'rax' },
+      output: gp('register', 'rax'),
       spills: []
     },
     'rbx-out': {
       inputs: [],
-      output: { kind: 'register', value: 'rbx' },
+      output: gp('register', 'rbx'),
       spills: []
     },
     'rbx-call': {
       inputs: [],
-      output: { kind: 'register', value: 'rbx' },
+      output: gp('register', 'rbx'),
       spills: [
-        { kind: 'register', value: 'rax' },
-        { kind: 'register', value: 'rbx' },
-        { kind: 'register', value: 'rcx' },
-        { kind: 'register', value: 'rdx' }
+        gp('register', 'rax'),
+        gp('register', 'rbx'),
+        gp('register', 'rcx'),
+        gp('register', 'rdx')
       ]
     },
     call: {
-      output: { kind: 'register', value: 'rax' },
-      inputs: [ 'register', 'any' ],
+      output: gp('register', 'rax'),
+      inputs: [ gp('register'), gp('any') ],
       spills: [
-        { kind: 'register', value: 'rax' },
-        { kind: 'register', value: 'rbx' },
-        { kind: 'register', value: 'rcx' },
-        { kind: 'register', value: 'rdx' }
+        gp('register', 'rax'),
+        gp('register', 'rbx'),
+        gp('register', 'rcx'),
+        gp('register', 'rdx')
       ]
     }
   }

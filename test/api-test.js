@@ -8,7 +8,7 @@ var linearscan = require('../');
 var fixtures = require('./fixtures');
 var check = fixtures.checkResolver;
 
-describe('Interval Resolver', function() {
+describe('Interval API', function() {
   it('should respect register uses', function() {
     var p = pipeline.create('dominance');
 
