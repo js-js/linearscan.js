@@ -9,6 +9,10 @@ function gp(kind, value) {
   return { kind: kind, group: 'gp', value: value };
 }
 
+function fp(kind, value) {
+  return { kind: kind, group: 'fp', value: value };
+}
+
 exports.options = {
   registers: {
     gp: [
@@ -22,11 +26,22 @@ exports.options = {
     literal: {
       output: gp('any')
     },
+    'literal-fp': {
+      output: fp('any')
+    },
     if: {},
     jump: {},
     add: {
       output: gp('any'),
       inputs: [ gp('any'), gp('any') ]
+    },
+    'add-fp': {
+      output: fp('any'),
+      inputs: [ fp('any'), fp('any') ]
+    },
+    floor: {
+      output: gp('any'),
+      inputs: [ fp('any') ]
     },
     return: {
       inputs: [ gp('register', 'rax') ]

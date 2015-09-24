@@ -56,4 +56,37 @@ describe('Interval API', function() {
       }
     */}));
   });
+
+  it('should work for two groups', function() {
+    var p = pipeline.create('dominance');
+
+    p.parse(fixtures.fn2str(function() {/*
+      pipeline {
+        b0 {
+          i0 = literal-fp 1
+          i1 = literal-fp 2
+          i2 = add-fp i0, i1
+          i3 = floor i2
+          i4 = return i3
+        }
+      }
+    */}), {
+      cfg: true
+    }, 'printable');
+
+    p.reindex();
+
+    var config = linearscan.config.create(fixtures.options);
+    var out = linearscan.allocate(p, config);
+
+    assertText.equal(out.render('printable'), fixtures.fn2str(function() {/*
+      register {
+        %xmm1 = literal-fp 1
+        %xmm2 = literal-fp 2
+        %xmm1 = add-fp %xmm1, %xmm2
+        %rax = floor %xmm1
+        return %rax
+      }
+    */}));
+  });
 });
