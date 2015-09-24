@@ -31,7 +31,7 @@
     "binary-search": "^1.2.0",
     "bit-set.js": "^1.0.1",
     "bitfield.js": "^1.2.0",
-    "json-pipeline": "^2.7.0",
+    "json-pipeline": "^2.8.0",
     "parallel-move": "^1.0.0"
   }
 }

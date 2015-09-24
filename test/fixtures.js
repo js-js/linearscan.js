@@ -41,7 +41,7 @@ exports.options = {
     },
     floor: {
       output: gp('any'),
-      inputs: [ fp('any') ]
+      inputs: [ fp('register') ]
     },
     return: {
       inputs: [ gp('register', 'rax') ]

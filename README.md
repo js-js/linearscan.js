@@ -8,59 +8,81 @@ Linearscan register allocator for javascript
 // Declare some instructions
 var linearscan = require('linearscan');
 
-var config = linearscan.config.create({
-  // List of available registers
-  registers: [ 'rax', 'rbx', 'rcx', 'rdx' ],
+function gp(kind, value) {
+  return { kind: kind, group: 'gp', value: value };
+}
 
-  // Available opcodes
+function fp(kind, value) {
+  return { kind: kind, group: 'fp', value: value };
+}
+
+var config = linearscan.config.create({
+  // Multiple register groups might be specified, they will be allocated
+  // separately
+  registers: {
+    gp: [
+      'rax', 'rbx', 'rcx', 'rdx'
+    ],
+    fp: [
+      'xmm1', 'xmm2', 'xmm3', 'xmm4'
+    ]
+  },
   opcodes: {
     literal: {
-      // `any` means either `register` or `spill`
-      output: 'any'
+      // 'any' means either 'register' or 'spill'
+      output: gp('any')
+    },
+    'literal-fp': {
+      output: fp('any')
     },
     if: {},
     jump: {},
-    'ssa:phi': {
-      output: 'any',
-      inputs: [ 'any', 'any' ]
-    },
     add: {
-      output: 'any',
-      inputs: [ 'any', 'any' ]
+      output: gp('any'),
+      inputs: [ gp('any'), gp('any') ]
+    },
+    'add-fp': {
+      output: fp('any'),
+      inputs: [ fp('any'), fp('any') ]
+    },
+    floor: {
+      output: gp('any'),
+      inputs: [ fp('any') ]
     },
     return: {
-      // Specify particular register requirement
-      inputs: [ { kind: 'register', value: 'rax' } ]
+      // specify particular register that MUST be used here
+      inputs: [ gp('register', 'rax') ]
     },
     'rax-out': {
       inputs: [],
-      output: { kind: 'register', value: 'rax' },
+      output: gp('register', 'rax'),
       spills: []
     },
     'rbx-out': {
       inputs: [],
-      output: { kind: 'register', value: 'rbx' },
+      output: gp('register', 'rbx'),
       spills: []
     },
     'rbx-call': {
       inputs: [],
-      output: { kind: 'register', value: 'rbx' },
+      output: gp('register', 'rbx'),
       spills: [
-        { kind: 'register', value: 'rax' },
-        { kind: 'register', value: 'rbx' },
-        { kind: 'register', value: 'rcx' },
-        { kind: 'register', value: 'rdx' }
+        gp('register', 'rax'),
+        gp('register', 'rbx'),
+        gp('register', 'rcx'),
+        gp('register', 'rdx')
       ]
     },
     call: {
-      output: { kind: 'register', value: 'rax' },
-      // `register` means any kind of register
-      inputs: [ 'register', 'any' ],
+      output: gp('register', 'rax'),
+
+      // 'register' means just any GP register
+      inputs: [ gp('register'), gp('any') ],
       spills: [
-        { kind: 'register', value: 'rax' },
-        { kind: 'register', value: 'rbx' },
-        { kind: 'register', value: 'rcx' },
-        { kind: 'register', value: 'rdx' }
+        gp('register', 'rax'),
+        gp('register', 'rbx'),
+        gp('register', 'rcx'),
+        gp('register', 'rdx')
       ]
     }
   }
@@ -101,7 +123,8 @@ register {
 
 ## Spill count
 
-`out.spills` is the number of used spill slots
+`out.spills` is the map with number of used spill slots in each property value,
+where property name is a register group.
 
 #### LICENSE
 
