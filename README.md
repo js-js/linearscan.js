@@ -123,8 +123,8 @@ register {
 
 ## Spill count
 
-`out.spills` is the map with number of used spill slots in each property value,
-where property name is a register group.
+`out.spillType` is the list of spill ranges of following format:
+`{ type: 'register-group', from: index, to: index }`.
 
 #### LICENSE
 
