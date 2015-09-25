@@ -75,11 +75,6 @@ exports.options = {
         gp('register', 'rcx'),
         gp('register', 'rdx')
       ]
-    },
-    'dyn-param': {
-      output: function(node) {
-        return gp('register', [ 'rax', 'rbx', 'rcx', 'rdx' ][node.literals[0]]);
-      }
     }
   }
 };
