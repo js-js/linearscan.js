@@ -78,12 +78,20 @@ var config = linearscan.config.create({
 
       // 'register' means just any GP register
       inputs: [ gp('register'), gp('any') ],
+
+      // Spills will be moved to stack slots on invocation of this opcode
       spills: [
         gp('register', 'rax'),
         gp('register', 'rbx'),
         gp('register', 'rcx'),
         gp('register', 'rdx')
       ]
+    },
+    'dyn-param': {
+      // You may pass function to make decision depend on the node
+      output: function(node) {
+        return gp('register', [ 'rax', 'rbx', 'rcx', 'rdx' ][node.literals[0]]);
+      }
     }
   }
 });

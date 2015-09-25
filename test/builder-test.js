@@ -232,4 +232,33 @@ describe('Interval Builder', function() {
       8. add [8;9) : {8=*}
     */});
   });
+
+  it('should account for dynamic operands', function() {
+    var b = fixtures.createBuilder(fixtures.options, function() {/*
+      pipeline {
+        b0 {
+          i0 = dyn-param 0
+          i1 = dyn-param 1
+          i2 = dyn-param 2
+          i3 = dyn-param 3
+        }
+      }
+    */});
+
+    b.buildIntervals();
+
+    check(b, function() {/*
+      %0 [2;3)
+      %1 [4;5)
+      %2 [6;7)
+      %3 [8;9)
+
+      0. start (dead) [0;11)
+
+      2. dyn-param %0 (dead) [2;3) : {2=%0}
+      4. dyn-param %1 (dead) [4;5) : {4=%1}
+      6. dyn-param %2 (dead) [6;7) : {6=%2}
+      8. dyn-param %3 (dead) [8;9) : {8=%3}
+    */});
+  });
 });
