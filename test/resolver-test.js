@@ -11,7 +11,7 @@ describe('Interval Resolver', function() {
           i0 = literal 1
           i1 = literal 2
           i2 = add i0, i1
-          i3 = return i2
+          i3 = return ^b0, i2
         }
       }
     */});
@@ -31,7 +31,7 @@ describe('Interval Resolver', function() {
       pipeline {
         b0 {
           i0 = rbx-call
-          i1 = return i0
+          i1 = return ^b0, i0
         }
       }
     */});
@@ -59,6 +59,7 @@ describe('Interval Resolver', function() {
           i7 = add i2, i2
           i8 = add i3, i3
           i9 = add i4, i4
+          i10 = return ^b0, i9
         }
       }
     */});
@@ -77,6 +78,7 @@ describe('Interval Resolver', function() {
       16: %0 = add [2], [2]
       18: %0 = add [1], [1]
       20: %0 = add [0], [0]
+      22: return %0
     */});
   });
 
@@ -87,7 +89,7 @@ describe('Interval Resolver', function() {
           i0 = literal 1
           i1 = literal 2
           i2 = add i0, i1
-          i3 = return i1
+          i3 = return ^b0, i1
         }
       }
     */});
@@ -117,6 +119,7 @@ describe('Interval Resolver', function() {
           i7 = add i2, i2
           i8 = add i3, i3
           i9 = add i4, i4
+          i10 = return ^b0, i9
         }
       }
     */});
@@ -134,6 +137,7 @@ describe('Interval Resolver', function() {
       16: %0 = add %2, %2
       18: %0 = add %3, %3
       20: %0 = add [0], [0]
+      22: return %0
     */});
   });
 
@@ -159,7 +163,7 @@ describe('Interval Resolver', function() {
 
         b3 {
           i5 = ssa:phi ^b3, i1, i3
-          i6 = return i5
+          i6 = return ^b3, i5
         }
       }
     */});
@@ -203,7 +207,7 @@ describe('Interval Resolver', function() {
 
         b3 {
           i6 = add i1, i1
-          i7 = return i6
+          i7 = return ^b3, i6
         }
       }
     */});
@@ -248,7 +252,7 @@ describe('Interval Resolver', function() {
         b2 -> b3
 
         b3 {
-          i5 = return i0
+          i5 = return ^b3, i0
         }
       }
     */});
@@ -285,6 +289,7 @@ describe('Interval Resolver', function() {
           i7 = add i2, i2
           i8 = add i3, i3
           i9 = add i4, i4
+          i10 = return ^b0, i9
         }
       }
     */});
@@ -304,6 +309,7 @@ describe('Interval Resolver', function() {
       16: %0 = add [2], [2]
       18: %0 = add [1], [1]
       20: %0 = add [0], [0]
+      22: return %0
     */});
   });
 });

@@ -11,7 +11,7 @@ describe('Interval Allocator', function() {
           i0 = literal 1
           i1 = literal 2
           i2 = add i0, i1
-          i3 = return i2
+          i3 = return ^b0, i2
         }
       }
     */});
@@ -40,6 +40,7 @@ describe('Interval Allocator', function() {
           i7 = add i2, i2
           i8 = add i3, i3
           i9 = add i4, i4
+          i10 = return ^b0, i9
         }
       }
     */});
@@ -57,6 +58,7 @@ describe('Interval Allocator', function() {
       %0 = add %2 %2
       %0 = add %3 %3
       %0 = add [0] [0]
+      (none) = return %0
     */});
   });
 
@@ -74,6 +76,7 @@ describe('Interval Allocator', function() {
           i7 = add i2, i2
           i8 = add i3, i3
           i9 = add i4, i4
+          i10 = return ^b0, i9
         }
       }
     */});
@@ -91,6 +94,7 @@ describe('Interval Allocator', function() {
       %0 = add [2] [2]
       %0 = add [1] [1]
       %0 = add [0] [0]
+      (none) = return %0
     */});
   });
 
@@ -108,7 +112,7 @@ describe('Interval Allocator', function() {
           i7 = add i0, i1
           i8 = add i2, i3
           i9 = add i4, i5
-          i10 = return i6
+          i10 = return ^b0, i6
         }
       }
     */});

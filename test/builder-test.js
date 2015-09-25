@@ -158,7 +158,7 @@ describe('Interval Builder', function() {
           i0 = literal "function-name"
           i1 = literal 0
           i2 = call i0, i1
-          i3 = return i2
+          i3 = return ^b0, i2
         }
       }
     */});
@@ -186,7 +186,7 @@ describe('Interval Builder', function() {
         b0 {
           i0 = literal 1
           i1 = add i0, i0
-          i2 = return i0
+          i2 = return ^b0, i0
         }
       }
     */});
@@ -211,7 +211,7 @@ describe('Interval Builder', function() {
           i0 = literal "function-name"
           i1 = literal 0
           i2 = call i0, i1
-          i3 = add i2, i2
+          i3 = add ^b0, i2, i2
         }
       }
     */});

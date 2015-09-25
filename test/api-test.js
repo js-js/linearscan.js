@@ -25,6 +25,7 @@ describe('Interval API', function() {
           i7 = add i2, i2
           i8 = add i3, i3
           i9 = add i4, i4
+          i10 = return ^b0, i9
         }
       }
     */}), {
@@ -56,6 +57,7 @@ describe('Interval API', function() {
         %rax = add [2], [2]
         %rax = add [1], [1]
         %rax = add [0], [0]
+        return %rax
       }
     */}));
   });
@@ -78,7 +80,7 @@ describe('Interval API', function() {
           i9 = floor i8
           i10 = floor i4
           i11 = add i9, i10
-          i12 = return i11
+          i12 = return ^b0, i11
         }
       }
     */}), {
