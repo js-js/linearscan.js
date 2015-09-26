@@ -46,12 +46,12 @@ describe('Interval API', function() {
         %rbx = literal 2
         %rcx = literal 3
         %rdx = literal 4
-        [0] = ls:move:gp %rdx
+        [0] = ls:move.gp %rdx
         %rdx = literal 5
-        [1] = ls:move:gp [0]
-        [3] = ls:move:gp %rbx
-        [2] = ls:move:gp %rcx
-        [0] = ls:move:gp %rdx
+        [1] = ls:move.gp [0]
+        [3] = ls:move.gp %rbx
+        [2] = ls:move.gp %rcx
+        [0] = ls:move.gp %rdx
         %rax = call %rdx, %rax
         %rax = add [3], [3]
         %rax = add [2], [2]
@@ -109,7 +109,7 @@ describe('Interval API', function() {
         %xmm1 = add-fp %xmm2, %xmm1
 
         %rax = floor %xmm1
-        %xmm1 = ls:move:fp [0]
+        %xmm1 = ls:move.fp [0]
         %rbx = floor %xmm1
         %rax = add %rax, %rbx
         return %rax
