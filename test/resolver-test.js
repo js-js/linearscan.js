@@ -312,4 +312,38 @@ describe('Interval Resolver', function() {
       22: return %0
     */});
   });
+
+  it('should resolve branch without merge', function() {
+    var r = fixtures.createResolver(fixtures.options, function() {/*
+      pipeline {
+        b0 {
+          i0 = rbx-out
+          i1 = if ^b0
+        }
+        b0 -> b1, b2
+
+        b1 {
+          i2 = return ^b1, i0
+        }
+
+        b2 {
+          i3 = return ^b2, i0
+        }
+      }
+    */});
+
+    r.resolve();
+
+    // TODO(indutny): figure out how to move similar moves to the branch
+    check(r, function() {/*
+      2: %1 = rbx-out
+      4: if &8, &12
+
+      8: gap {%1=>%0}
+      9: return %0
+
+      12: gap {%1=>%0}
+      14: return %0
+    */});
+  });
 });
