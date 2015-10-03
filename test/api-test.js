@@ -116,4 +116,53 @@ describe('Interval API', function() {
       }
     */}));
   });
+
+  it('should work for dynamic opcodes', function() {
+    var p = pipeline.create('dominance');
+
+    p.parse(fixtures.fn2str(function() {/*
+      pipeline {
+        b0 {
+          i0 = literal 1
+          i1 = vararg
+          i2 = vararg i0
+          i3 = vararg i0, i0
+          i4 = vararg i0, i0, i0
+          i5 = vararg i0, i0, i0, i0
+          i6 = return ^b0, i5
+        }
+      }
+    */}), {
+      cfg: true
+    }, 'printable');
+
+    p.reindex();
+
+    var config = linearscan.config.create(fixtures.options);
+    var out = linearscan.allocate(p, config);
+
+    assertText.equal(out.render('printable'), fixtures.fn2str(function() {/*
+      register {
+        # [0, 0) as gp
+        # [0, 1) as fp
+
+        %xmm1 = literal-fp 0
+        %xmm2 = literal-fp 1
+        %xmm3 = literal-fp 2
+        %xmm4 = literal-fp 3
+        [0] = literal-fp 4
+
+        %xmm1 = add-fp %xmm1, %xmm2
+        %xmm2 = add-fp %xmm3, %xmm4
+        %xmm1 = add-fp %xmm1, [0]
+        %xmm1 = add-fp %xmm2, %xmm1
+
+        %rax = floor %xmm1
+        %xmm1 = ls:move.fp [0]
+        %rbx = floor %xmm1
+        %rax = add %rax, %rbx
+        return %rax
+      }
+    */}));
+  });
 });

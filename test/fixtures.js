@@ -75,6 +75,15 @@ exports.options = {
         gp('register', 'rcx'),
         gp('register', 'rdx')
       ]
+    },
+    vararg: function(node) {
+      var regs = [ 'rax', 'rbx', 'rcx', 'rdx' ];
+      return {
+        output: gp('register', 'rax'),
+        inputs: node.inputs.map(function(input, i) {
+          return gp('register', regs[i]);
+        })
+      };
     }
   }
 };
