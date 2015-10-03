@@ -124,12 +124,15 @@ describe('Interval API', function() {
       pipeline {
         b0 {
           i0 = literal 1
-          i1 = vararg
-          i2 = vararg i0
-          i3 = vararg i0, i0
-          i4 = vararg i0, i0, i0
-          i5 = vararg i0, i0, i0, i0
-          i6 = return ^b0, i5
+          i1 = literal 2
+          i2 = literal 3
+          i3 = literal 4
+          i4 = vararg
+          i5 = vararg i0
+          i6 = vararg i0, i1
+          i7 = vararg i0, i1, i2
+          i8 = vararg i0, i1, i2, i3
+          i9 = return ^b0, i8
         }
       }
     */}), {

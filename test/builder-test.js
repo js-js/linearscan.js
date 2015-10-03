@@ -140,7 +140,7 @@ describe('Interval Builder', function() {
       7. region (dead) [7;14)
       14. region (dead) [14;21)
 
-      2. literal [2;7), [14;17) : {2=*}, {16=*}, {16=*}, {18=%0}
+      2. literal [2;7), [14;17) : {2=*}, {16=*}, {18=%0}
       4. jump (dead) [4;5)
 
       9. literal [9;10) : {9=*}, {11=%0}
@@ -198,7 +198,7 @@ describe('Interval Builder', function() {
 
       0. start (dead) [0;9)
 
-      2. literal [2;5) : {2=*}, {4=*}, {4=*}, {6=%0}
+      2. literal [2;5) : {2=*}, {4=*}, {6=%0}
       4. add [4;5) : {4=*}
       6. return (dead) [6;7)
     */});
@@ -228,7 +228,7 @@ describe('Interval Builder', function() {
 
       2. literal [2;6) : {2=*}, {6=%*}
       4. literal [4;6) : {4=*}, {6=*}
-      6. call %0 (dead) [6;7) : {8=*}, {8=*}, {6=%0}
+      6. call %0 (dead) [6;7) : {8=*}, {6=%0}
       8. add [8;9) : {8=*}
     */});
   });
