@@ -72,7 +72,7 @@ describe('Interval Resolver', function() {
       6: %2 = literal
       8: %3 = literal
       10: [0] = literal
-      11: gap {%1=>[3],%2=>[2],%3=>[1]}
+      11: gap @{%1=>[3],%2=>[2],%3=>[1]}
       12: %0 = call %0, %0
       14: %0 = add [3], [3]
       16: %0 = add [2], [2]
@@ -220,7 +220,7 @@ describe('Interval Resolver', function() {
       7: %0 = rax-out
       9: jump &13, &21
 
-      13: gap {%0=>%1}
+      13: gap @{%0=>%1}
       14: %0 = rax-out
       16: %0 = add %1, %0
       18: jump &7
@@ -263,7 +263,7 @@ describe('Interval Resolver', function() {
       2: %0 = rax-out
       4: if &8, &14
 
-      8: gap {%0=>%1}
+      8: gap @{%0=>%1}
       9: %0 = rax-out
       11: jump &20
 
@@ -301,9 +301,9 @@ describe('Interval Resolver', function() {
       4: %1 = literal
       6: %2 = literal
       8: %3 = literal
-      9: gap {%3=>[0]}
+      9: gap @{%3=>[0]}
       10: %3 = literal
-      11: gap {%1=>[3],%2=>[2],%3=>[0],[0]=>[1]}
+      11: gap @{%1=>[3],%2=>[2],%3=>[0],[0]=>[1]}
       12: %0 = call %3, %0
       14: %0 = add [3], [3]
       16: %0 = add [2], [2]

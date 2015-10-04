@@ -124,15 +124,12 @@ describe('Interval API', function() {
       pipeline {
         b0 {
           i0 = literal 1
-          i1 = literal 2
-          i2 = literal 3
-          i3 = literal 4
-          i4 = vararg
-          i5 = vararg i0
-          i6 = vararg i0, i1
-          i7 = vararg i0, i1, i2
-          i8 = vararg i0, i1, i2, i3
-          i9 = return ^b0, i8
+          i1 = vararg
+          i2 = vararg i0
+          i3 = vararg i0, i0
+          i4 = vararg i0, i0, i0
+          i5 = vararg i0, i0, i0, i0
+          i6 = return ^b0, i5
         }
       }
     */}), {
@@ -147,23 +144,27 @@ describe('Interval API', function() {
     assertText.equal(out.render('printable'), fixtures.fn2str(function() {/*
       register {
         # [0, 0) as gp
-        # [0, 1) as fp
-
-        %xmm1 = literal-fp 0
-        %xmm2 = literal-fp 1
-        %xmm3 = literal-fp 2
-        %xmm4 = literal-fp 3
-        [0] = literal-fp 4
-
-        %xmm1 = add-fp %xmm1, %xmm2
-        %xmm2 = add-fp %xmm3, %xmm4
-        %xmm1 = add-fp %xmm1, [0]
-        %xmm1 = add-fp %xmm2, %xmm1
-
-        %rax = floor %xmm1
-        %xmm1 = ls:move.fp [0]
-        %rbx = floor %xmm1
-        %rax = add %rax, %rbx
+        # [0, 0) as fp
+        %rax = literal 1
+        %rbx = ls:move.gp %rax
+        %rax = vararg
+        %rax = ls:move.gp %rbx
+        %rbx = ls:move.gp %rax
+        %rax = vararg %rax
+        %rax = ls:move.gp %rbx
+        %rbx = ls:move.gp %rax
+        %rbx = ls:move.gp %rax
+        %rax = vararg %rax, %rbx
+        %rax = ls:move.gp %rbx
+        %rbx = ls:move.gp %rax
+        %rcx = ls:move.gp %rax
+        %rbx = ls:move.gp %rax
+        %rax = vararg %rax, %rbx, %rcx
+        %rax = ls:move.gp %rbx
+        %rdx = ls:move.gp %rax
+        %rcx = ls:move.gp %rax
+        %rbx = ls:move.gp %rax
+        %rax = vararg %rax, %rbx, %rcx, %rdx
         return %rax
       }
     */}));

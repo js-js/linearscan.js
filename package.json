@@ -30,7 +30,6 @@
   "dependencies": {
     "binary-search": "^1.2.0",
     "bit-set.js": "^1.0.1",
-    "bitfield.js": "^1.2.0",
     "json-pipeline": "^3.0.0",
     "parallel-move": "^1.0.0"
   }
