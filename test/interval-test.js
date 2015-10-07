@@ -376,6 +376,21 @@ describe('Interval', function() {
       assert.equal(interval.intersect(other), 20);
       assert.equal(other.intersect(interval), 20);
     });
+
+    it('should not fail on regression', function() {
+      // [ [3;16), [25;44), [58;73) ] [ [2;3), [68;70), [74;76) ]
+      interval.addRange(3, 16);
+      interval.addRange(25, 44);
+      interval.addRange(58, 73);
+
+      var other = new Interval(null);
+      other.addRange(2, 3);
+      other.addRange(68, 70);
+      other.addRange(74, 76);
+
+      assert.equal(interval.intersect(other), 68);
+      assert.equal(other.intersect(interval), 68);
+    });
   });
 
   describe('childAt', function() {
