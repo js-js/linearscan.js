@@ -35,8 +35,11 @@ var config = linearscan.config.create({
     'literal-fp': {
       output: fp('any')
     },
-    if: {},
-    jump: {},
+
+    // Set `branch` to `true` to get links to other regions
+    if: { branch: true },
+    jump: { branch: true },
+
     add: {
       output: gp('any'),
       inputs: [ gp('any'), gp('any') ]

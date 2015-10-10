@@ -29,8 +29,8 @@ exports.options = {
     'literal-fp': {
       output: fp('any')
     },
-    if: {},
-    jump: {},
+    if: { branch: true },
+    jump: { branch: true },
     add: {
       output: gp('any'),
       inputs: [ gp('any'), gp('any') ]
