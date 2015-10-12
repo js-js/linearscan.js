@@ -69,11 +69,14 @@ var config = linearscan.config.create({
     'rbx-call': {
       inputs: [],
       output: gp('register', 'rbx'),
+
+      // Scratches are similar to spills, but neither input nor output will
+      // be allocated to this value.
+      scratches: [ gp('register', 'rdx') ],
       spills: [
         gp('register', 'rax'),
         gp('register', 'rbx'),
-        gp('register', 'rcx'),
-        gp('register', 'rdx')
+        gp('register', 'rcx')
       ]
     },
     call: {
