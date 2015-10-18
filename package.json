@@ -30,6 +30,7 @@
   "dependencies": {
     "binary-search": "^1.2.0",
     "bit-set.js": "^1.0.1",
+    "debug": "^2.2.0",
     "json-pipeline": "^3.0.0",
     "json-pipeline-reducer": "^1.4.0",
     "parallel-move": "^1.0.0"
